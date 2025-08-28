@@ -1,15 +1,16 @@
 .resumeContainer {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
   gap: 20px;
   padding: 20px;
   width: 40%;
+  color: black;
 }
 
 .resumePreview {
-  width: 100%; /* image takes full width of container */
-  height: auto; /* keeps aspect ratio */
+  width: 100%;
+  height: auto;
   border: 1px solid #ccc;
   border-radius: 8px;
 }
@@ -26,5 +27,13 @@
 }
 
 .downloadButton:hover {
-  background-color: #333;
+  background-color: green;
+  border: 2px solid white;
+  color: white;
+}
+
+.downloadButton {
+  background-color: white;
+  color: green;
+  border: 2px solid green;
 }

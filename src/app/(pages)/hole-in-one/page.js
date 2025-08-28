@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "./page.module.css";
 import Dropdown from "@/components/Dropdown/Dropdown";
 import Hero from "@/components/Golf/Hero/Hero";
+import Button from "@/components/Button/Button";
 
 const HoleInOne = () => {
   const [power, setPower] = useState(0);
@@ -234,9 +235,11 @@ const HoleInOne = () => {
           preload="auto"
         />
       </div>
-      <button className={styles.resetButton} onClick={handleReset}>
-        Reset Game
-      </button>
+      <Button
+        title="Reset Game"
+        className={styles.resetButton}
+        onClick={handleReset}
+      />
     </React.Fragment>
   );
 };

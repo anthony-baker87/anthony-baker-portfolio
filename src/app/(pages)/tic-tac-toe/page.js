@@ -2,6 +2,7 @@
 import { useState } from "react";
 import styles from "./page.module.css";
 import { checkWinner, getBestMove, isDraw } from "@/utils/ai/ticTacToe";
+import Button from "@/components/Button/Button";
 
 const TicTacToe = () => {
   const [playerTurn, setPlayerTurn] = useState("1");
@@ -83,9 +84,11 @@ const TicTacToe = () => {
       </div>
 
       <div className={styles.resetWrapper}>
-        <button className={styles.resetButton} onClick={handleReset}>
-          RESET
-        </button>
+        <Button
+          title="RESET"
+          onClick={handleReset}
+          className={styles.resetButton}
+        />
       </div>
     </div>
   );

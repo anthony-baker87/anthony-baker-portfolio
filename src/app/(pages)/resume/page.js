@@ -8,14 +8,12 @@ const Resume = () => {
     <div className={styles.resumeContainer}>
       <h1>Resume</h1>
       <p>Below you can preview my resume or download a copy.</p>
-      <a
+      <Button
+        title="Download Resume"
         href="/pdfs/AnthonyBakerResume.pdf"
         download="AnthonyBakerResume.pdf"
         className={styles.downloadButton}
-      >
-        Download Resume
-      </a>
-      <Button title="Download Resume" />
+      />
       <div className={styles.imageWrapper}>
         <Image
           src="/images/resume/resume-preview.png"

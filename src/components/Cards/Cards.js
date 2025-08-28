@@ -8,12 +8,12 @@ const Cards = ({ cardsData = [] }) => {
     <div className={styles.cardsContainer}>
       {cardsData.map((card, index) => (
         <Link
-          key={index}
           href={card?.link}
           className={styles.cardLink}
-          title={card?.link}
+          key={index}
+          title={card?.title}
         >
-          <div key={index} className={styles.card}>
+          <div className={styles.cardContainer}>
             <h3 className={styles.cardTitle}>{card?.title}</h3>
             <div className={styles.cardContent}>{card?.content}</div>
             {card?.imageLink && (

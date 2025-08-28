@@ -36,7 +36,7 @@ const GitHubRepositories = () => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.githubContainer}>
       <h1>My GitHub Repositories</h1>
       <div className={styles.cardsContainer}>
         {loading ? "Loading..." : <Cards cardsData={cardData} />}

@@ -1,3 +1,7 @@
+.githubContainer {
+  color: black;
+}
+
 .cardsContainer {
   display: flex;
   flex-direction: column;

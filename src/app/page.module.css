@@ -164,3 +164,7 @@ a.secondary {
     filter: invert();
   }
 }
+
+.homepageContainer {
+  color: black;
+}
