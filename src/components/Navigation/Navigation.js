@@ -1,58 +1,55 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import styles from "./Navigation.module.css";
 import ProfilePicture from "../ProfilePicture/ProfilePicture";
 
 const Navigation = () => {
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/about-me", label: "About Me" },
+    { href: "/projects", label: "Projects" },
+    { href: "/skills", label: "Skills" },
+    { href: "/github-repositories", label: "GitHub Repositories" },
+    { href: "/contact", label: "Contact" },
+    { href: "/resume", label: "Resume" },
+    { href: "/hole-in-one", label: "Hole in One" },
+    { href: "/rock-paper-scissors", label: "Rock, Paper, Scissors" },
+    { href: "/tic-tac-toe", label: "Tic, Tac, Toe" },
+  ];
+
   return (
-    <nav className={styles.navContainer}>
-      <ProfilePicture />
-      <Link href="/" title="Home" className={styles.linkWrapper}>
-        Home
-      </Link>
-      <Link href="/about-me" title="About Me" className={styles.linkWrapper}>
-        About Me
-      </Link>
-      <Link href="/projects" title="Projects" className={styles.linkWrapper}>
-        Projects
-      </Link>
-      <Link href="/skills" title="Skills" className={styles.linkWrapper}>
-        Skills
-      </Link>
-      <Link
-        href="/github-repositories"
-        title="GitHub Repositories"
-        className={styles.linkWrapper}
+    <>
+      <div
+        className={`${styles.hamburger} ${menuOpen ? styles.open : ""}`}
+        onClick={() => setMenuOpen(!menuOpen)}
       >
-        GitHub Repositories
-      </Link>
-      <Link href="/contact" title="Contact" className={styles.linkWrapper}>
-        Contact
-      </Link>
-      <Link href="/resume" title="Resume" className={styles.linkWrapper}>
-        Resume
-      </Link>
-      <Link
-        href="/hole-in-one"
-        title="Hole in One"
-        className={styles.linkWrapper}
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <nav
+        className={`${styles.navContainer} ${menuOpen ? styles.open : ""}`}
+        onClick={() => setMenuOpen(false)}
       >
-        Hole in One
-      </Link>
-      <Link
-        href="/rock-paper-scissors"
-        title="Rock, Paper, Scissors"
-        className={styles.linkWrapper}
-      >
-        Rock, Paper, Scissors
-      </Link>
-      <Link
-        href="/tic-tac-toe"
-        title="Tic, Tac, Toe"
-        className={styles.linkWrapper}
-      >
-        Tic, Tac, Toe
-      </Link>
-    </nav>
+        <ProfilePicture />
+        {links.map(({ href, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className={`${styles.linkWrapper} ${
+              pathname === href ? styles.activeLink : ""
+            }`}
+          >
+            {label}
+          </Link>
+        ))}
+      </nav>
+    </>
   );
 };
 
