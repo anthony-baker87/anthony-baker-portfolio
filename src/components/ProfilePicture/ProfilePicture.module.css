@@ -1,0 +1,10 @@
+.profilePictureContainer {
+  border-bottom: 3px solid black;
+}
+
+.profilePictureName {
+  color: black;
+  text-align: center;
+  margin: 10px 0;
+  font-weight: bold;
+}

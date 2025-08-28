@@ -1,0 +1,31 @@
+.rulesContainer {
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 2rem auto;
+  text-align: center;
+  color: black;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.rulesList {
+  list-style-type: disc;
+  text-align: left;
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.rulesList li {
+  margin-bottom: 0.5rem;
+}
+
+.tip {
+  font-style: italic;
+  color: #555;
+  margin-top: 1rem;
+}

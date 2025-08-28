@@ -1,0 +1,30 @@
+.resumeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 20px;
+  padding: 20px;
+  width: 40%;
+}
+
+.resumePreview {
+  width: 100%; /* image takes full width of container */
+  height: auto; /* keeps aspect ratio */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.downloadButton {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #000;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background 0.2s ease;
+}
+
+.downloadButton:hover {
+  background-color: #333;
+}

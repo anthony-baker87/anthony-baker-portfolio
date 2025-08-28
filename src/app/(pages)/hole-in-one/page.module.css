@@ -1,0 +1,43 @@
+.gameContainer {
+  width: 100%;
+  height: 500px;
+  border: 2px solid black;
+  position: relative;
+  background: #a2d5f2;
+  overflow: hidden;
+}
+
+.powerBar {
+  width: 80%;
+  height: 20px;
+  background: #ccc;
+  margin: 10px auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.powerFill {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.05s linear;
+}
+
+.golfArea {
+  position: relative;
+  width: 100%;
+  height: 500px; /* or whatever matches your hole image */
+}
+.golfer {
+  position: absolute;
+  font-size: 24px;
+}
+
+.ball {
+  position: absolute;
+  font-size: 24px;
+}
+
+.flag {
+  position: absolute;
+  font-size: 24px;
+}

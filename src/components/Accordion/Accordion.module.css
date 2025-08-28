@@ -1,0 +1,33 @@
+.accordionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.accordionSection {
+  cursor: pointer;
+  border: 2px solid white;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.accordionTitleContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: orange;
+  justify-content: space-between;
+}
+
+.accordionContentContainer {
+  color: pink;
+}
+
+.accordionIcon {
+  font-size: 30px;
+  display: flex;
+  justify-content: flex-end;
+  align-self: flex-end;
+}

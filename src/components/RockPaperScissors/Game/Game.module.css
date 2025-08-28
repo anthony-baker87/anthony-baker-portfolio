@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.choiceRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.choiceRow:hover {
+  transform: scale(2.05);
+}
+
+.choice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.choiceLabel {
+  font-weight: bold;
+  text-transform: capitalize;
+  min-width: 70px;
+  text-align: right;
+}
+
+.score {
+  text-align: center;
+  min-width: 345px;
+}
+
+.choicesTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-left: 10px;
+}

@@ -1,0 +1,33 @@
+.tabsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tabRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.tabTitle {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
+  background-color: transparent;
+  transition: background 0.2s ease;
+  border-radius: 5px;
+}
+
+.tabTitle.active {
+  border-right: 2px solid blue;
+  border-bottom: 2px solid blue;
+  font-weight: bold;
+}
+
+.tabContent {
+  color: white;
+}
