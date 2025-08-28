@@ -1,5 +1,5 @@
 .gameContainer {
-  width: 100%;
+  width: 1200px;
   height: 500px;
   border: 2px solid black;
   position: relative;
@@ -40,4 +40,19 @@
 .flag {
   position: absolute;
   font-size: 24px;
+}
+
+.resetButton {
+  width: 120px;
+  height: 40px;
+  font-size: 16px;
+  margin-left: 2px;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border-radius: 8px;
+  border: 2px solid black;
+  cursor: pointer;
+  margin: 10px 0 0 0;
+  padding: 10px;
 }

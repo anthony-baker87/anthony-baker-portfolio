@@ -1,14 +1,15 @@
 "use client";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./page.module.css";
 import Dropdown from "@/components/Dropdown/Dropdown";
+import Hero from "@/components/Golf/Hero/Hero";
 
 const HoleInOne = () => {
   const [power, setPower] = useState(0);
   const [isCharging, setIsCharging] = useState(false);
-  const [ballPosition, setBallPosition] = useState({ x: 40, y: 80 });
-  const [golferPosition, setGolferPosition] = useState({ x: -70, y: 34 });
+  const [ballPosition, setBallPosition] = useState({ x: 40, y: 40 });
+  const [golferPosition, setGolferPosition] = useState({ x: -70, y: -7 });
   const [hasWon, setHasWon] = useState(false);
   const [club, setClub] = useState(null);
 
@@ -42,6 +43,15 @@ const HoleInOne = () => {
       hitBallRef.current.currentTime = 0;
       hitBallRef.current.play();
     }
+  };
+
+  const handleReset = () => {
+    setPower(0);
+    setIsCharging(false);
+    setBallPosition({ x: 40, y: 40 });
+    setGolferPosition({ x: -70, y: -7 });
+    setHasWon(false);
+    setGolferFrame("/images/golf/golfer-idle.png");
   };
 
   const animateFrames = (frames, onComplete, holdLast = 0, onFrame = null) => {
@@ -139,7 +149,7 @@ const HoleInOne = () => {
         setHasWon(true);
 
         setGolferFrame("/images/golf/golfer-idle.png");
-        // setGolferPosition({ x: flagX - 110, y: flagY - 46 });
+        setGolferPosition({ x: flagX - 110, y: flagY - 46 });
 
         cancelAnimationFrame(animationRef.current);
         return;
@@ -151,7 +161,7 @@ const HoleInOne = () => {
         animationRef.current = requestAnimationFrame(animate);
       } else {
         setGolferFrame("/images/golf/golfer-idle.png");
-        // setGolferPosition({ x: x - 110, y: y - 46 });
+        setGolferPosition({ x: x - 110, y: y - 46 });
       }
     };
     animate();
@@ -164,64 +174,70 @@ const HoleInOne = () => {
   ];
 
   return (
-    <div className={styles.gameContainer}>
-      {/* <Dropdown options={clubOptions} onSelect={setClub} /> */}
-
-      <div
-        className={styles.golfArea}
-        ref={gameAreaRef}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-      >
-        <Image
-          src="/images/golf/golf-hole.png"
-          alt="Golf Hole"
-          fill
-          style={{ objectFit: "cover", objectPosition: "bottom center" }}
-          priority
-        />
+    <React.Fragment>
+      <Hero />
+      {hasWon && <div className={styles.winMessage}>You Win!</div>}
+      <div className={styles.gameContainer}>
+        {/* <Dropdown options={clubOptions} onSelect={setClub} /> */}
 
         <div
-          className={styles.golfer}
-          style={{
-            left: `${golferPosition.x}px`,
-            bottom: `${golferPosition.y}px`,
-          }}
-        >
-          <Image src={golferFrame} alt="Golfer" width={200} height={200} />
-        </div>
-
-        <div
-          className={styles.ball}
-          style={{ left: `${ballPosition.x}px`, bottom: `${ballPosition.y}px` }}
+          className={styles.golfArea}
+          ref={gameAreaRef}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
         >
           <Image
-            src="/images/golf/golf-ball.png"
-            alt="Golf Ball"
-            width={30}
-            height={30}
+            src="/images/golf/golf-hole.png"
+            alt="Golf Hole"
+            fill
+            style={{ objectFit: "cover", objectPosition: "bottom center" }}
+            priority
           />
+
+          <div
+            className={styles.golfer}
+            style={{
+              left: `${golferPosition.x}px`,
+              bottom: `${golferPosition.y}px`,
+            }}
+          >
+            <Image src={golferFrame} alt="Golfer" width={200} height={200} />
+          </div>
+
+          <div
+            className={styles.ball}
+            style={{
+              left: `${ballPosition.x}px`,
+              bottom: `${ballPosition.y}px`,
+            }}
+          >
+            <Image
+              src="/images/golf/golf-ball.png"
+              alt="Golf Ball"
+              width={30}
+              height={30}
+            />
+          </div>
+
+          <div
+            ref={flagRef}
+            className={styles.flag}
+            style={{ right: "50px", bottom: "60px" }}
+          >
+            🚩
+          </div>
         </div>
 
-        <div
-          ref={flagRef}
-          className={styles.flag}
-          style={{ right: "50px", bottom: "100px" }}
-        >
-          🚩
-        </div>
-
-        {hasWon && (
-          <div className={styles.winMessage}>🎉 Hole in One! You Win! 🎉</div>
-        )}
+        <audio
+          ref={hitBallRef}
+          src="/soundfx/golf/swing-hit.mp3"
+          preload="auto"
+        />
       </div>
-
-      <audio
-        ref={hitBallRef}
-        src="/soundfx/golf/swing-hit.mp3"
-        preload="auto"
-      />
-    </div>
+      <button className={styles.resetButton} onClick={handleReset}>
+        Reset Game
+      </button>
+    </React.Fragment>
   );
 };
 
