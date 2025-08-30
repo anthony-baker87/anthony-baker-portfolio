@@ -60,7 +60,7 @@ const TicTacToe = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>TIC-TAC-TOE</h1>
-      <p>See if you can beat the NPC</p>
+      <p className={styles.subtitle}>See if you can beat the NPC</p>
       <div className={styles.status}>
         {isWin
           ? playerTurn === "0"

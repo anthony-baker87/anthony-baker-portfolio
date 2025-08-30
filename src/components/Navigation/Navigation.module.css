@@ -1,7 +1,7 @@
 .navContainer {
   position: fixed;
-  left: 0;
   top: 0;
+  left: 0;
   height: 100vh;
   width: 230px;
   background: linear-gradient(180deg, #1e1e2f, #121218);
@@ -9,93 +9,22 @@
   flex-direction: column;
   padding: 20px 10px;
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
-
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #3b82f6 transparent;
-}
-
-.navContainer::-webkit-scrollbar {
-  width: 6px;
-}
-.navContainer::-webkit-scrollbar-thumb {
-  background: #3b82f6;
-  border-radius: 3px;
-}
-.navContainer::-webkit-scrollbar-track {
-  background: transparent;
-}
-.linkWrapper {
-  position: relative;
-  display: block;
-  padding: 14px 18px;
-  margin: 6px 0;
-  color: #d1d5db;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 1rem;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-.linkWrapper:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(6px);
-}
-
-.linkWrapper::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 60%;
-  width: 4px;
-  border-radius: 4px;
-  background: transparent;
-  transition: background 0.3s ease;
-}
-
-.linkWrapper:hover::before {
-  background: #3b82f6;
-}
-
-.activeLink {
-  color: #fff;
-  background: rgba(59, 130, 246, 0.15);
-}
-
-.activeLink::before {
-  background: #3b82f6;
-}
-
-/* --- Desktop Sidebar (default) --- */
-.navContainer {
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
-  width: 230px;
-  background: linear-gradient(180deg, #1e1e2f, #121218);
-  display: flex;
-  flex-direction: column;
-  padding: 20px 10px;
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
-
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #3b82f6 transparent;
   transition: transform 0.3s ease;
+  z-index: 1000;
 }
 
 .navContainer::-webkit-scrollbar {
   width: 6px;
 }
+
 .navContainer::-webkit-scrollbar-thumb {
   background: #3b82f6;
   border-radius: 3px;
 }
+
 .navContainer::-webkit-scrollbar-track {
   background: transparent;
 }
@@ -140,22 +69,77 @@
   color: #fff;
   background: rgba(59, 130, 246, 0.15);
 }
+
 .activeLink::before {
   background: #3b82f6;
 }
 
 @media (max-width: 768px) {
-  .navContainer {
-    height: 100vh;
-    width: 70%;
-    max-width: 280px;
-    transform: translateX(-100%);
-    background: #111827; 
-    box-shadow: 6px 0 20px rgba(0, 0, 0, 0.5);
+  .mobileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000;
+    width: 100%;
+    height: 56px;
+    background: #3289ec;
+    z-index: 1500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    padding: 0 20px;
+  }
+
+  .mobileName {
+    font-weight: bold;
+    font-size: 24px;
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hamburger {
+    width: 32px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    position: absolute;
+    left: 20px;
+    z-index: 1501;
+  }
+
+  .hamburger span {
+    display: block;
+    height: 4px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .hamburger.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 6px);
+  }
+  .hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -6px);
+  }
+
+  .navContainer {
+    top: 56px;
+    left: 0;
+    width: 70%;
+    max-width: 280px;
+    height: calc(100vh - 56px);
+    background: #111827;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1400;
+    overflow-y: auto;
   }
 
   .navContainer.open {
@@ -169,39 +153,7 @@
     border-radius: 0;
   }
 
-
   .navContainer::-webkit-scrollbar {
     display: none;
-  }
-
-  .hamburger {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1100;
-    width: 32px;
-    height: 24px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .hamburger span {
-    display: block;
-    height: 4px;
-    background: #fff;
-    border-radius: 2px;
-    transition: all 0.3s ease;
-  }
-
-  .hamburger.open span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 6px);
-  }
-  .hamburger.open span:nth-child(2) {
-    opacity: 0;
-  }
-  .hamburger.open span:nth-child(3) {
-    transform: rotate(-45deg) translate(5px, -6px);
   }
 }

@@ -13,13 +13,16 @@ const ProfilePicture = () => {
 
   return (
     <div className={styles.profilePictureContainer}>
-      <Image
-        src="/images/navigation/thebakes.webp"
-        alt="Profile Picture"
-        width={mobile ? 260 : 200}
-        height={300}
-        priority
-      />
+      <div className={styles.profileImageWrapper}>
+        <Image
+          src="/images/navigation/thebakes.webp"
+          alt="Profile Picture"
+          fill
+          sizes={mobile ? "(max-width: 768px) 140px" : "200px"}
+          priority={!mobile}
+          style={{ objectFit: "cover" }}
+        />
+      </div>
       <div className={styles.profilePictureName}>Anthony Baker</div>
     </div>
   );

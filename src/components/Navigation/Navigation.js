@@ -24,13 +24,16 @@ const Navigation = () => {
 
   return (
     <>
-      <div
-        className={`${styles.hamburger} ${menuOpen ? styles.open : ""}`}
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        <span></span>
-        <span></span>
-        <span></span>
+      <div className={styles.mobileHeader}>
+        <div
+          className={`${styles.hamburger} ${menuOpen ? styles.open : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span className={styles.mobileName}>Anthony Baker</span>
       </div>
       <nav
         className={`${styles.navContainer} ${menuOpen ? styles.open : ""}`}

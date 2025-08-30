@@ -33,8 +33,8 @@ const Game = () => {
 
   return (
     <div className={styles.container}>
+      <div className={styles.choicesTitle}>Your Choices</div>
       <div className={styles.choices}>
-        <div className={styles.choicesTitle}>Your Choices</div>
         {choices.map((choice) => (
           <div
             key={choice}

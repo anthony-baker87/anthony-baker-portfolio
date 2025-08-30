@@ -3,9 +3,24 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
-  padding: 20px;
+  padding: 0;
   width: 40%;
   color: black;
+}
+
+@media (max-width: 768px) {
+  .resumeContainer {
+    padding: 60px 10px;
+  }
+}
+
+.resumeContainer h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .resumePreview {
@@ -27,13 +42,35 @@
 }
 
 .downloadButton:hover {
-  background-color: green;
+  background-color: #3289ec;
   border: 2px solid white;
   color: white;
 }
 
 .downloadButton {
   background-color: white;
-  color: green;
-  border: 2px solid green;
+  color: #3289ec;
+  border: 2px solid #3289ec;
+}
+
+@media (max-width: 768px) {
+  .resumeContainer {
+    width: 100%;
+    padding: 10px;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .resumePreview {
+    width: 100%;
+    border: 1px solid #ccc;
+  }
+
+  .downloadButton {
+    width: 100%;
+    text-align: center;
+    padding: 12px 0;
+  }
 }

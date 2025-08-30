@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import PropTypes from "prop-types";
 import styles from "./Cards.module.css";
+import { BREAKPOINTS } from "@/utils/breakpoints";
 
 const Cards = ({ cardsData = [] }) => {
   return (
@@ -24,7 +25,7 @@ const Cards = ({ cardsData = [] }) => {
                   fill
                   style={{ objectFit: "cover" }}
                   priority
-                  sizes="(max-width: 768px) 100vw, 300px"
+                  sizes={`(max-width: ${BREAKPOINTS.mobile}px) 100vw, 300px`}
                 />
               </div>
             )}

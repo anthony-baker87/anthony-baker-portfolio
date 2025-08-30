@@ -124,7 +124,7 @@ a.secondary {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .page {
     padding: 32px;
     padding-bottom: 80px;
@@ -167,4 +167,5 @@ a.secondary {
 
 .homepageContainer {
   color: black;
+  padding: 60px 10px;
 }

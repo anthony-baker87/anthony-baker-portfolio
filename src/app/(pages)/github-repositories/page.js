@@ -1,10 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import Cards from "@/components/Cards/Cards";
 import styles from "./page.module.css";
 import { fetchGitHubRepos } from "@/utils/github/github";
 
-const GitHubRepositories = () => {
+export default function GitHubRepositories() {
   const [cardData, setCardData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,33 +15,55 @@ const GitHubRepositories = () => {
       setCardData([
         {
           title: "My Main GitHub Account",
-          content:
+          description:
             "All of my main projects, scripts, and web apps are stored here.",
           link: "https://github.com/anthony-baker87",
-          imageLink: mainRepos.length > 0 ? mainRepos[0].owner.avatar_url : "",
+          avatar: mainRepos.length > 0 ? mainRepos[0].owner.avatar_url : "",
         },
         {
           title: "My Alternate GitHub Account",
-          content:
+          description:
             "Experimental and smaller side projects I like to tinker with.",
           link: "https://github.com/memegineer",
-          imageLink: altRepos.length > 0 ? altRepos[0].owner.avatar_url : "",
+          avatar: altRepos.length > 0 ? altRepos[0].owner.avatar_url : "",
         },
       ]);
+
+      setLoading(false);
     };
 
     loadCards();
-    setLoading(false);
   }, []);
 
   return (
     <div className={styles.githubContainer}>
-      <h1>My GitHub Repositories</h1>
-      <div className={styles.cardsContainer}>
-        {loading ? "Loading..." : <Cards cardsData={cardData} />}
-      </div>
+      <h1 className={styles.heading}>My GitHub Repositories</h1>
+
+      {loading ? (
+        <p className={styles.loading}>Loading...</p>
+      ) : (
+        <div className={styles.grid}>
+          {cardData.map((repo, i) => (
+            <a
+              key={i}
+              href={repo.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.card}
+            >
+              {repo.avatar && (
+                <img
+                  src={repo.avatar}
+                  alt={repo.title}
+                  className={styles.avatar}
+                />
+              )}
+              <h2 className={styles.cardTitle}>{repo.title}</h2>
+              <p className={styles.cardDescription}>{repo.description}</p>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
-};
-
-export default GitHubRepositories;
+}

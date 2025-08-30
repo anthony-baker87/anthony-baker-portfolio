@@ -1,50 +1,100 @@
 .container {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
   align-items: center;
-  margin: 10px 0;
-  color: black;
+  margin: 20px auto;
+  padding: 0 20px;
+  max-width: 900px;
+  font-family: "Inter", sans-serif;
+  color: #111827;
+}
+
+.gameRow {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .choices {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+.choicesTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #3b82f6;
 }
 
 .choiceRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 12px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s ease;
+  background: #f3f4f6;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .choiceRow:hover {
-  transform: scale(2.05);
-}
-
-.choice {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .choiceLabel {
   font-weight: bold;
   text-transform: capitalize;
-  min-width: 70px;
-  text-align: right;
+  min-width: 80px;
+  text-align: left;
 }
 
 .score {
   text-align: center;
-  min-width: 345px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+  background: #fef9c3;
+  padding: 12px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+  width: 74%;
 }
 
-.choicesTitle {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-left: 10px;
+@media (max-width: 768px) {
+  .gameRow {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .choicesTitle {
+    font-size: 1.1rem;
+  }
+
+  .choiceRow {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .choiceLabel {
+    min-width: 60px;
+    font-size: 0.95rem;
+  }
+  .choices {
+    width: 100%;
+    flex-direction: column;
+  }
+  .container {
+    padding: 0;
+  }
+  .score {
+    width: 100%;
+  }
 }

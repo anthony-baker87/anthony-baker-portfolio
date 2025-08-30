@@ -1,3 +1,10 @@
 .contactContainer {
   color: black;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .contactContainer {
+    padding: 60px 10px;
+  }
 }
