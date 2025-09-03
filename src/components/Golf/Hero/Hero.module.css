@@ -1,4 +1,11 @@
 .heroContainer {
   margin-bottom: 40px;
-  color: black;
+  color: white;
+}
+
+.heroContainer h1 {
+  background: linear-gradient(90deg, #c8dbf8, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

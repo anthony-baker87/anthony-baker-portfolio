@@ -25,7 +25,7 @@
 .golfArea {
   position: relative;
   width: 100%;
-  height: 500px; /* or whatever matches your hole image */
+  height: 500px;
 }
 .golfer {
   position: absolute;
@@ -58,5 +58,5 @@
 }
 
 .winMessage {
-  color: black;
+  color: white;
 }

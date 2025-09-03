@@ -5,8 +5,10 @@ import styles from "./page.module.css";
 import Dropdown from "@/components/Dropdown/Dropdown";
 import Hero from "@/components/Golf/Hero/Hero";
 import Button from "@/components/Button/Button";
+import { isMobile } from "@/utils/device";
 
 const HoleInOne = () => {
+  const [mobile, setMobile] = useState(false);
   const [power, setPower] = useState(0);
   const [isCharging, setIsCharging] = useState(false);
   const [ballPosition, setBallPosition] = useState({ x: 40, y: 40 });
@@ -17,6 +19,11 @@ const HoleInOne = () => {
   const animationRef = useRef(null);
   const gameAreaRef = useRef(null);
   const flagRef = useRef(null);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    setMobile(isMobile(userAgent));
+  }, []);
 
   const [golferFrame, setGolferFrame] = useState(
     "/images/golf/golfer-idle.png"
@@ -174,13 +181,14 @@ const HoleInOne = () => {
     { value: "putter", label: "Putter" },
   ];
 
+  if (mobile) return <h1>Sorry, this is only available on desktop.</h1>;
+
   return (
     <React.Fragment>
       <Hero />
       {hasWon && <div className={styles.winMessage}>You Win!</div>}
       <div className={styles.gameContainer}>
         {/* <Dropdown options={clubOptions} onSelect={setClub} /> */}
-
         <div
           className={styles.golfArea}
           ref={gameAreaRef}

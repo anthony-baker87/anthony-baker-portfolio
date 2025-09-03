@@ -11,11 +11,9 @@ const Navigation = () => {
 
   const links = [
     { href: "/", label: "Home" },
-    { href: "/about-me", label: "About Me" },
     { href: "/projects", label: "Projects" },
     { href: "/skills", label: "Skills" },
     { href: "/github-repositories", label: "GitHub Repositories" },
-    { href: "/contact", label: "Contact" },
     { href: "/resume", label: "Resume" },
     { href: "/hole-in-one", label: "Hole in One" },
     { href: "/rock-paper-scissors", label: "Rock, Paper, Scissors" },
