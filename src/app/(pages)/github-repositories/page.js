@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import styles from "./page.module.css";
 import { fetchGitHubRepos } from "@/utils/github/github";
 
@@ -52,11 +53,14 @@ export default function GitHubRepositories() {
               className={styles.card}
             >
               {repo.avatar && (
-                <img
-                  src={repo.avatar}
-                  alt={repo.title}
-                  className={styles.avatar}
-                />
+                <div className={styles.avatarWrapper}>
+                  <Image
+                    src={repo.avatar}
+                    alt={repo.title}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
               )}
               <h2 className={styles.cardTitle}>{repo.title}</h2>
               <p className={styles.cardDescription}>{repo.description}</p>
