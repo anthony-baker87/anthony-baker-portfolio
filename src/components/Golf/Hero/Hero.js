@@ -6,8 +6,8 @@ const Hero = () => {
       <h1>Hole in One Golf Game</h1>
       <p>This is a work in progress :)</p>
       <p>
-        Click and hold anywhere on the game's screen and release when you're
-        ready to hit the ball.
+        Click and hold anywhere on the game&apos;s screen and release when
+        you&apos;re ready to hit the ball.
       </p>
       <p>See if you can hit the ball on the flag.</p>
       <p>

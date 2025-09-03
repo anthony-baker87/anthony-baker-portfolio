@@ -15,7 +15,7 @@ export default function Home() {
       <div className={styles.aboutMeContainer}>
         <h2>About Me</h2>
         <p>
-          Over the past 5+ years, I've built responsive, scalable, and
+          Over the past 5+ years, I&apos;ve built responsive, scalable, and
           accessible interfaces, collaborating closely with designers and
           engineers to bring ideas to life. I enjoy creating reusable
           components, optimizing performance, and delivering user experiences
