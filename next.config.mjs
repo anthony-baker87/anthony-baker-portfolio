@@ -4,7 +4,7 @@ const isProd = process.env.NODE_ENV === "production";
 const nextConfig = {
   output: "export",
   images: {
-    unoptimized: true, // disable Next.js image optimization for GH Pages
+    unoptimized: true,
     domains: ["avatars.githubusercontent.com"],
   },
   basePath: isProd ? "/anthony-baker-portfolio" : "",
