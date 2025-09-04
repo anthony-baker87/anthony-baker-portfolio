@@ -15,7 +15,7 @@ const ProfilePicture = () => {
     <div className={styles.profilePictureContainer}>
       <div className={styles.profileImageWrapper}>
         <Image
-          src="/images/navigation/thebakes.webp"
+          src="./images/navigation/thebakes.webp"
           alt="Profile Picture"
           fill
           sizes={mobile ? "(max-width: 768px) 140px" : "200px"}

@@ -16,7 +16,7 @@ const Resume = () => {
       />
       <div className={styles.imageWrapper}>
         <Image
-          src="/images/resume/resume-preview.png"
+          src="./images/resume/resume-preview.png"
           alt="Resume Preview"
           width={1200}
           height={1600}

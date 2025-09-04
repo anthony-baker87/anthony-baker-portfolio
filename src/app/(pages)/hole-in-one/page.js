@@ -26,22 +26,22 @@ const HoleInOne = () => {
   }, []);
 
   const [golferFrame, setGolferFrame] = useState(
-    "/images/golf/golfer-idle.png"
+    "./images/golf/golfer-idle.png"
   );
   const chargingFrames = [
-    "/images/golf/golfer-idle.png",
-    "/images/golf/golfer-bottom-left.png",
-    "/images/golf/golfer-left.png",
-    "/images/golf/golfer-top-left.png",
-    "/images/golf/golfer-top.png",
+    "./images/golf/golfer-idle.png",
+    "./images/golf/golfer-bottom-left.png",
+    "./images/golf/golfer-left.png",
+    "./images/golf/golfer-top-left.png",
+    "./images/golf/golfer-top.png",
   ];
   const releaseFrames = [
-    "/images/golf/golfer-top.png",
-    "/images/golf/golfer-top-left.png",
-    "/images/golf/golfer-left.png",
-    "/images/golf/golfer-bottom-left.png",
-    "/images/golf/golfer-idle.png",
-    "/images/golf/golfer-finish.png",
+    "./images/golf/golfer-top.png",
+    "./images/golf/golfer-top-left.png",
+    "./images/golf/golfer-left.png",
+    "./images/golf/golfer-bottom-left.png",
+    "./images/golf/golfer-idle.png",
+    "./images/golf/golfer-finish.png",
   ];
 
   const hitBallRef = useRef(null);
@@ -59,7 +59,7 @@ const HoleInOne = () => {
     setBallPosition({ x: 40, y: 40 });
     setGolferPosition({ x: -70, y: -7 });
     setHasWon(false);
-    setGolferFrame("/images/golf/golfer-idle.png");
+    setGolferFrame("./images/golf/golfer-idle.png");
   };
 
   const animateFrames = (frames, onComplete, holdLast = 0, onFrame = null) => {
@@ -99,11 +99,11 @@ const HoleInOne = () => {
     animateFrames(
       releaseFrames,
       () => {
-        setGolferFrame("/images/golf/golfer-idle.png");
+        setGolferFrame("./images/golf/golfer-idle.png");
       },
       800,
       (frame) => {
-        if (frame === "/images/golf/golfer-idle.png") {
+        if (frame === "./images/golf/golfer-idle.png") {
           hitBall();
           playHitBallSound();
         }
@@ -156,7 +156,7 @@ const HoleInOne = () => {
         setBallPosition({ x: flagX, y: flagY });
         setHasWon(true);
 
-        setGolferFrame("/images/golf/golfer-idle.png");
+        setGolferFrame("./images/golf/golfer-idle.png");
         setGolferPosition({ x: flagX - 110, y: flagY - 46 });
 
         cancelAnimationFrame(animationRef.current);
@@ -168,7 +168,7 @@ const HoleInOne = () => {
       if (t < duration) {
         animationRef.current = requestAnimationFrame(animate);
       } else {
-        setGolferFrame("/images/golf/golfer-idle.png");
+        setGolferFrame("./images/golf/golfer-idle.png");
         setGolferPosition({ x: x - 110, y: y - 46 });
       }
     };
@@ -196,7 +196,7 @@ const HoleInOne = () => {
           onMouseUp={handleMouseUp}
         >
           <Image
-            src="/images/golf/golf-hole.png"
+            src="./images/golf/golf-hole.png"
             alt="Golf Hole"
             fill
             style={{ objectFit: "cover", objectPosition: "bottom center" }}
@@ -221,7 +221,7 @@ const HoleInOne = () => {
             }}
           >
             <Image
-              src="/images/golf/golf-ball.png"
+              src="./images/golf/golf-ball.png"
               alt="Golf Ball"
               width={30}
               height={30}

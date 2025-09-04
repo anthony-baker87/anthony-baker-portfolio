@@ -29,7 +29,7 @@ const Game = () => {
     }
   };
 
-  const getImageSrc = (choice) => `/images/rockPaperScissors/${choice}.png`;
+  const getImageSrc = (choice) => `./images/rockPaperScissors/${choice}.png`;
 
   return (
     <div className={styles.container}>
