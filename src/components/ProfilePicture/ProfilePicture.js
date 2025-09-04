@@ -20,6 +20,7 @@ const ProfilePicture = () => {
           }/images/navigation/thebakes.webp`}
           alt="Profile Picture"
           fill
+          priority
           sizes={mobile ? "(max-width: 768px) 140px" : "200px"}
           style={{ objectFit: "cover" }}
         />
