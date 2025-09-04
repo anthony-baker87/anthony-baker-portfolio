@@ -10,7 +10,9 @@ const Resume = () => {
       <p>Below you can preview my resume or download a copy.</p>
       <Button
         title="Download Resume"
-        href="/pdfs/AnthonyBakerResume.pdf"
+        href={`${
+          process.env.NEXT_PUBLIC_BASE_PATH || ""
+        }/pdfs/AnthonyBakerResume.pdf`}
         download="AnthonyBakerResume.pdf"
         className={styles.downloadButton}
       />
