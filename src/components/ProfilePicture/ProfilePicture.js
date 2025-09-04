@@ -21,7 +21,6 @@ const ProfilePicture = () => {
           alt="Profile Picture"
           fill
           sizes={mobile ? "(max-width: 768px) 140px" : "200px"}
-          priority={!mobile}
           style={{ objectFit: "cover" }}
         />
       </div>

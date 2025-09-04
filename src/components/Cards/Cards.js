@@ -50,7 +50,6 @@ const CardContent = ({ card }) => (
           alt={card.title}
           fill
           style={{ objectFit: "contain" }}
-          priority
           sizes="100vw"
         />
       </div>

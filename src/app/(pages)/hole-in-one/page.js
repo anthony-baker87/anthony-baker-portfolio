@@ -201,7 +201,6 @@ const HoleInOne = () => {
             alt="Golf Hole"
             fill
             style={{ objectFit: "cover", objectPosition: "bottom center" }}
-            priority
           />
 
           <div

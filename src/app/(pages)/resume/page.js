@@ -23,7 +23,6 @@ const Resume = () => {
           width={1200}
           height={1600}
           className={styles.resumePreview}
-          priority
         />
       </div>
     </div>
