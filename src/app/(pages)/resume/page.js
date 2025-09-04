@@ -16,7 +16,9 @@ const Resume = () => {
       />
       <div className={styles.imageWrapper}>
         <Image
-          src="./images/resume/resume-preview.png"
+          src={`${
+            process.env.NEXT_PUBLIC_BASE_PATH || ""
+          }/images/resume/resume-preview.png`}
           alt="Resume Preview"
           width={1200}
           height={1600}
