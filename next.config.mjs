@@ -5,6 +5,7 @@ const nextConfig = {
   output: "export",
   basePath: isProd ? process.env.NEXT_PUBLIC_BASE_PATH : "",
   assetPrefix: isProd ? process.env.NEXT_PUBLIC_BASE_PATH + "/" : "",
+  experimental: { rsc: { prefetch: false } },
   images: {
     unoptimized: true,
   },
