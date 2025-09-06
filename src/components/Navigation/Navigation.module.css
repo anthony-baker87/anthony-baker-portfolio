@@ -139,17 +139,17 @@
     max-width: 280px;
     height: calc(100vh - 56px);
     background: #111827;
-    transform: translateX(-100%);
+    transform: translate3d(-100%, 0, 0);
     transition: transform 0.3s ease;
     z-index: 1400;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    -webkit-transform: translateZ(0);
+    will-change: transform;
   }
 
   .navContainer.open {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 
   .linkWrapper {
