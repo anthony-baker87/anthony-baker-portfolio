@@ -11,6 +11,8 @@
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  -webkit-transform: translateZ(0);
   scrollbar-width: thin;
   scrollbar-color: #3b82f6 transparent;
   transition: transform 0.3s ease;
@@ -142,6 +144,8 @@
     z-index: 1400;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    -webkit-transform: translateZ(0);
   }
 
   .navContainer.open {
