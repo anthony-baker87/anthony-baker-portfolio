@@ -33,10 +33,7 @@ const Navigation = () => {
         </div>
         <span className={styles.mobileName}>Anthony Baker</span>
       </div>
-      <nav
-        className={`${styles.navContainer} ${menuOpen ? styles.open : ""}`}
-        onClick={() => setMenuOpen(false)}
-      >
+      <nav className={`${styles.navContainer} ${menuOpen ? styles.open : ""}`}>
         <ProfilePicture />
         {links.map(({ href, label }) => (
           <Link
@@ -45,6 +42,7 @@ const Navigation = () => {
             className={`${styles.linkWrapper} ${
               pathname === href ? styles.activeLink : ""
             }`}
+            onClick={() => setMenuOpen(false)} // <- move here
           >
             {label}
           </Link>
