@@ -45,6 +45,10 @@
   transition: all 0.3s ease;
 }
 
+.linkWrapper:last-child {
+  margin-bottom: 60px;
+}
+
 .linkWrapper:hover {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
