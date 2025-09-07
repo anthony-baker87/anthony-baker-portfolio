@@ -23,6 +23,11 @@ export const websites = [
     link: "https://rehabs.com/",
     note: "Sold to a competitor company",
   },
+  {
+    title: "Fentanyl Addiction",
+    link: "https://fentanylsupport.org/",
+    note: "Sold to a competitor company",
+  },
   { title: "Laguna Treatment", link: "https://lagunatreatment.com/" },
   { title: "Recovery First", link: "https://recoveryfirst.org/" },
   { title: "River Oaks Treatment", link: "https://riveroakstreatment.com/" },
@@ -34,11 +39,6 @@ export const websites = [
     title: "ClientReach",
     link: "https://clientreachapp.recoverybrands.com/login",
     note: "Leading advertising platform in the addiction recovery space",
-  },
-  {
-    title: "Fentanyl Addiction",
-    link: null,
-    note: " (Site no longer active)",
   },
 ];
 
