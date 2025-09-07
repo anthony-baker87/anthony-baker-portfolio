@@ -135,9 +135,9 @@
   .navContainer {
     top: 56px;
     left: 0;
+    height: calc(100vh - 56px);
     width: 70%;
     max-width: 280px;
-    height: calc(100vh - 56px);
     background: #111827;
     transform: translate3d(-100%, 0, 0);
     transition: transform 0.3s ease;
@@ -146,7 +146,7 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     will-change: transform;
-    padding-bottom: env(safe-area-inset-bottom, 20px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 40px) + 40px);
   }
 
   .navContainer.open {
