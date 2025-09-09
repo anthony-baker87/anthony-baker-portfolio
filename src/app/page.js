@@ -4,8 +4,7 @@ export default function Home() {
   return (
     <div className={styles.homepageContainer}>
       <div className={styles.heroContainer}>
-        <h1>Anthony Baker</h1>
-        <p className={styles.subtitle}>Frontend React & Next.js Developer</p>
+        <h1>Frontend React & Next.js Developer</h1>
         <p className={styles.intro}>
           I build modern, accessible, and high-performance web applications.
           With experience in React and Next.js, I turn complex designs into

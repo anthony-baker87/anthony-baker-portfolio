@@ -1,5 +1,10 @@
 export const websites = [
   {
+    title: "ClientReach",
+    link: "https://clientreachapp.recoverybrands.com/login",
+    note: "Leading advertising platform in the addiction recovery space",
+  },
+  {
     title: "American Addiction Centers",
     link: "https://americanaddictioncenters.org/",
   },
@@ -35,11 +40,6 @@ export const websites = [
   { title: "Oxford Treatment", link: "https://oxfordtreatment.com/" },
   { title: "Desert Hope Treatment", link: "https://deserthopetreatment.com/" },
   { title: "Greenhouse Treatment", link: "https://greenhousetreatment.com/" },
-  {
-    title: "ClientReach",
-    link: "https://clientreachapp.recoverybrands.com/login",
-    note: "Leading advertising platform in the addiction recovery space",
-  },
 ];
 
 export const projectsData = [

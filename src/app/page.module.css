@@ -12,8 +12,12 @@
   justify-content: center;
   align-items: center;
   gap: 16px;
-  margin: 4rem auto 6rem auto;
+  margin: 4rem auto 2rem auto;
   width: 60%;
+  text-align: center;
+}
+
+.heroContainer h1 {
   text-align: center;
 }
 
@@ -24,6 +28,10 @@
 
   .homepageContainer {
     padding: 0;
+  }
+
+  .aboutMeContainer h2 {
+    margin: 20px 0 0 0;
   }
 }
 
