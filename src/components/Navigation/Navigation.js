@@ -18,6 +18,7 @@ const Navigation = () => {
     { href: "/hole-in-one", label: "Hole in One" },
     { href: "/rock-paper-scissors", label: "Rock, Paper, Scissors" },
     { href: "/tic-tac-toe", label: "Tic, Tac, Toe" },
+    { href: "/blackjack", label: "Blackjack" },
   ];
 
   return (

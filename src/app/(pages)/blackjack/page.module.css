@@ -1,0 +1,25 @@
+.blackjackContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tableContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dealerContainer,
+.playerContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.hudContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
