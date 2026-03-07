@@ -1,41 +1,50 @@
 import styles from "./page.module.css";
 
 export default function Home() {
+  const strengths = [
+    {
+      title: "Frontend Development",
+      description:
+        "Building high traffic React and Next.js applications with a strong focus on performance, accessibility, and scalability.",
+    },
+    {
+      title: "Performance Optimization",
+      description:
+        "Improving Core Web Vitals, SEO, load times, and conversion-focused user experiences across production applications.",
+    },
+    {
+      title: "UI Systems",
+      description:
+        "Translating design systems into reusable components with responsive layouts, maintainable architecture, and clean user experiences.",
+    },
+  ];
+
   return (
     <div className={styles.homepageContainer}>
-      <div className={styles.heroContainer}>
+      <section className={styles.heroContainer}>
         <h1>Frontend React & Next.js Developer</h1>
         <p className={styles.intro}>
-          I build modern, accessible, and high-performance web applications.
-          With experience in React and Next.js, I turn complex designs into
-          seamless, responsive interfaces.
+          Frontend Developer with 5+ years building high traffic, SEO-optimized
+          React and Next.js applications in Agile environments.
         </p>
-      </div>
-      <div className={styles.aboutMeContainer}>
-        <h2>About Me</h2>
-        <p>
-          Over the past 5+ years, I&apos;ve built responsive, scalable, and
-          accessible interfaces, collaborating closely with designers and
-          engineers to bring ideas to life. I enjoy creating reusable
-          components, optimizing performance, and delivering user experiences
-          that delight.
+        <p className={styles.introSecondary}>
+          I improve load times, accessibility, and user experience while helping
+          drive conversion growth through performant, scalable frontend
+          solutions.
         </p>
-        <h3>Highlighted Experience</h3>
-        <ul>
-          <li>
-            Built a reusable donut chart component in React/Next.js, increasing
-            UI consistency and improving lead-generation performance by 15%.
-          </li>
-          <li>
-            Developed 20+ responsive interfaces at American Addiction Centers,
-            reducing load times by 35% and improving accessibility.
-          </li>
-          <li>
-            QA engineer experience with automated testing, ensuring high-quality
-            releases and 99% uptime.
-          </li>
-        </ul>
-      </div>
+      </section>
+
+      <section className={styles.strengthsContainer}>
+        <h2>Core Strengths</h2>
+        <div className={styles.strengthsGrid}>
+          {strengths.map((strength) => (
+            <div key={strength.title} className={styles.strengthCard}>
+              <h3>{strength.title}</h3>
+              <p>{strength.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

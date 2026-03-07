@@ -44,9 +44,15 @@ export const websites = [
 
 export const projectsData = [
   {
+    title: "Alumni Story Submission Form",
+    content: `Developed a full-stack alumni story submission system using React Hook Form and a Node.js API route. The form validates user input, supports media uploads, and securely submits recovery stories to both WordPress and Salesforce for review. Built a preview-before-submit workflow to allow users to confirm their story prior to submission, improving usability and data quality.`,
+    link: "https://americanaddictioncenters.org/alumni-stories-submissions",
+    imageLink: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/projects/AlumniStoriesSubmissionsPreview.png`,
+  },
+  {
     title: "CTAs",
     content: `Designed and implemented visually compelling, high-performance call-to-actions (CTAs) that drove measurable increases in user engagement and conversion rates. Developed reusable React components with flexible styling options, enabling marketing teams to test variations without developer involvement. Built logic to adapt CTAs based on device type, viewport, and user flow, ensuring they felt natural and unobtrusive. These enhancements contributed to significant improvements in lead generation and user retention.`,
-    link: "https://americanaddictioncenters.org/",
+    link: "https://americanaddictioncenters.org/#:~:text=Support%20Built%20for%20Veterans",
     imageLink: `${
       process.env.NEXT_PUBLIC_BASE_PATH || ""
     }/images/projects/veteran-cta.png`,

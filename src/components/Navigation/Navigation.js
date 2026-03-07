@@ -11,10 +11,15 @@ const Navigation = () => {
 
   const links = [
     { href: "/", label: "Home" },
+    { href: "/professional-work", label: "Professional Work" },
     { href: "/projects", label: "Projects" },
-    { href: "/skills", label: "Skills" },
+    { href: "/skills", label: "Technical Skills" },
     { href: "/github-repositories", label: "GitHub Repositories" },
-    { href: "/resume", label: "Resume" },
+    {
+      href: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/pdfs/AnthonyBakerResume.pdf`,
+      label: "Resume",
+      external: true,
+    },
     { href: "/hole-in-one", label: "Hole in One" },
     { href: "/rock-paper-scissors", label: "Rock, Paper, Scissors" },
     { href: "/tic-tac-toe", label: "Tic, Tac, Toe" },
@@ -33,20 +38,34 @@ const Navigation = () => {
         </div>
         <span className={styles.mobileName}>Anthony Baker</span>
       </div>
+
       <nav className={`${styles.navContainer} ${menuOpen ? styles.open : ""}`}>
         <ProfilePicture />
-        {links.map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`${styles.linkWrapper} ${
-              pathname === href ? styles.activeLink : ""
-            }`}
-            onClick={() => setMenuOpen(false)} // <- move here
-          >
-            {label}
-          </Link>
-        ))}
+
+        {links.map(({ href, label, external }) =>
+          external ? (
+            <a
+              key={href}
+              href={href}
+              rel="noopener noreferrer"
+              className={styles.linkWrapper}
+              onClick={() => setMenuOpen(false)}
+            >
+              {label}
+            </a>
+          ) : (
+            <Link
+              key={href}
+              href={href}
+              className={`${styles.linkWrapper} ${
+                pathname === href ? styles.activeLink : ""
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              {label}
+            </Link>
+          ),
+        )}
       </nav>
     </>
   );

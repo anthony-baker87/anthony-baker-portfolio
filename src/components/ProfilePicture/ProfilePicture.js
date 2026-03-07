@@ -17,7 +17,7 @@ const ProfilePicture = () => {
         <Image
           src={`${
             process.env.NEXT_PUBLIC_BASE_PATH || ""
-          }/images/navigation/thebakes.webp`}
+          }/images/navigation/AnthonyBakerHeadshot.webp`}
           alt="Profile Picture"
           fill
           priority

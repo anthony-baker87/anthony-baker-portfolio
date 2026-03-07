@@ -15,6 +15,8 @@ const Cards = ({ cardsData = [] }) => {
             href={card.link}
             className={styles.cardLink}
             title={card.title}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <CardContent card={card} />
           </Link>
@@ -34,15 +36,17 @@ const Cards = ({ cardsData = [] }) => {
 
 const CardContent = ({ card }) => (
   <div className={styles.cardContainer}>
+    {card?.link && <div className={styles.externalIcon}>↗</div>}
+
     <div className={styles.textSection}>
       <h3 className={styles.cardTitle}>{card.title}</h3>
       <div className={styles.cardContent}>{card.content}</div>
+
       {card?.link && (
-        <div className={styles.clickMeText}>
-          Click Me to See the Live Implementation
-        </div>
+        <div className={styles.clickMeText}>View Live Implementation</div>
       )}
     </div>
+
     {card.imageLink && (
       <div className={styles.mediaWrapper}>
         <Image
@@ -54,6 +58,7 @@ const CardContent = ({ card }) => (
         />
       </div>
     )}
+
     {card.videoLink && (
       <div className={styles.mediaWrapper}>
         <video controls>
@@ -75,6 +80,6 @@ Cards.propTypes = {
       link: PropTypes.string,
       imageLink: PropTypes.string,
       videoLink: PropTypes.string,
-    })
+    }),
   ),
 };

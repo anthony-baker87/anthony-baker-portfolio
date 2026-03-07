@@ -1,69 +1,58 @@
 import styles from "./page.module.css";
 
 const skillsData = {
-  Languages: [
-    "JavaScript",
-    "HTML",
-    "CSS",
-    "TypeScript",
-    "SQL",
-    "PHP",
-    "Python",
-    "C#",
-    "C",
-    "C++",
-  ],
+  Languages: ["JavaScript", "TypeScript", "HTML", "CSS", "PHP", "Python", "C#"],
   "Frameworks & Libraries": [
     "React",
     "Next.js",
     "Angular",
-    "Express.js",
-  ],
-  "Technical Skills": [
-    "Agile",
     "Node.js",
+    "Express.js",
+    "React Hook Form",
+    "GraphQL",
+    "Redux",
+  ],
+  "Tools & Platforms": [
     "Git",
     "GitHub",
-    "NPM",
     "WordPress",
-    "Selenium",
-    "Figma",
     "Postman",
-    "AWS CodePipeline",
-    "Amazon Web Services",
-    "MongoDB",
-    "Salesforce",
-    "AB Tasty",
-    "Elfsight",
-    "Slack",
-    "Confluence",
-    "BrowserStack",
     "Docker",
     "NGINX",
+    "AWS CodePipeline",
+    "MongoDB",
+    "PostgreSQL",
+    "Salesforce",
+    "Figma",
+    "Jira",
     "Sentry",
-    "Responsive Web Design",
-    "Front-end Component Design",
-    "Debugging",
-    "CI/CD",
-    "RESTful APIs",
-    "Data Structures",
-    "API Implementation",
-    "Teamwork",
-    "Scrum",
-    "HIPAA Compliance",
+    "GitHub Actions",
+    "Vercel",
+  ],
+  "Performance & Web": [
+    "Core Web Vitals",
+    "Lighthouse",
+    "PageSpeed Insights",
+    "SEO Optimization",
+    "Accessibility (WCAG)",
+    "Responsive Design",
+    "REST APIs",
+    "Data Visualization",
     "Google Analytics",
     "Google Tag Manager",
-    "CallRail",
-    "Data Visualization",
-    "PageSpeed Insights",
+    "AB Tasty",
   ],
+  "Testing": ["Selenium", "BrowserStack", "Playwright", "Jest"],
 };
 
 export default function Skills() {
   return (
     <div className={styles.skillsContainer}>
-      <h1 className={styles.title}>Skills</h1>
-      <p className={styles.subtitle}>Here’s a breakdown of my technical skillset.</p>
+      <h1 className={styles.title}>Technical Skills</h1>
+      <p className={styles.subtitle}>
+        Core technologies and tools I use to design, build, and optimize modern
+        web applications.
+      </p>
 
       <div className={styles.grid}>
         {Object.entries(skillsData).map(([category, items]) => (
