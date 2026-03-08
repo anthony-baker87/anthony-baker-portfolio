@@ -9,6 +9,14 @@ const Navigation = () => {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const isActiveLink = (href) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   const links = [
     { href: "/", label: "Home" },
     { href: "/professional-work", label: "Professional Work" },
@@ -20,9 +28,10 @@ const Navigation = () => {
       label: "Resume",
       external: true,
     },
-    { href: "/hole-in-one", label: "Hole in One" },
-    { href: "/rock-paper-scissors", label: "Rock, Paper, Scissors" },
-    { href: "/tic-tac-toe", label: "Tic, Tac, Toe" },
+    {
+      href: "/games",
+      label: "Games",
+    },
   ];
 
   return (
@@ -58,7 +67,7 @@ const Navigation = () => {
               key={href}
               href={href}
               className={`${styles.linkWrapper} ${
-                pathname === href ? styles.activeLink : ""
+                isActiveLink(href) ? styles.activeLink : ""
               }`}
               onClick={() => setMenuOpen(false)}
             >
