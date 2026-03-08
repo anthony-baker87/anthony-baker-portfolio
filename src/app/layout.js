@@ -13,9 +13,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Anthony Baker's Portfolio",
+  title: "Anthony Baker | Frontend Developer",
   description:
-    "Next.js, React, JavaScript, Node.js Frontend Developer with 3+ years of experience",
+    "Frontend developer specializing in React and Next.js applications.",
+  openGraph: {
+    title: "Anthony Baker | Frontend Developer",
+    description:
+      "Frontend developer specializing in React and Next.js applications.",
+    url: "https://anthony-baker-portfolio.vercel.app",
+    siteName: "Anthony Baker Portfolio",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({ children }) {
