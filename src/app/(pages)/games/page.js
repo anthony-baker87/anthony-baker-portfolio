@@ -18,6 +18,11 @@ const games = [
     title: "Tic Tac Toe",
     description: "A simple strategy game with clean UI and game logic.",
   },
+  {
+    href: "/games/blackjack",
+    title: "Blackjack",
+    description: "A classic 21 card game with hit, stand, and dealer logic.",
+  },
 ];
 
 export default function GamesPage() {

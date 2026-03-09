@@ -4,15 +4,14 @@ const Hero = () => {
   return (
     <div className={styles.heroContainer}>
       <h1>Hole in One Golf Game</h1>
-      <p>This is a work in progress :)</p>
       <p>
-        Click and hold anywhere on the game&apos;s screen and release when
-        you&apos;re ready to hit the ball.
+        Click and hold anywhere in the game area to charge your shot, then
+        release to swing.
       </p>
-      <p>See if you can hit the ball on the flag.</p>
+      <p>The power meter oscillates, so timing your release matters.</p>
       <p>
-        Be careful, you can swing too hard and hit the ball off the screen. Hit
-        reset to try again.
+        Try to sink the ball in as few strokes as possible. Use Reset Round to
+        start over.
       </p>
     </div>
   );

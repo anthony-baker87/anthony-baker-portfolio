@@ -2,24 +2,45 @@
 import Image from "next/image";
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./page.module.css";
-import Dropdown from "@/components/Dropdown/Dropdown";
 import Hero from "@/components/Golf/Hero/Hero";
 import Button from "@/components/Button/Button";
 import { isMobile } from "@/utils/device";
+
+const RESTING_BALL_Y = 38;
+const START_BALL_POSITION = { x: 72, y: RESTING_BALL_Y };
+const GOLFER_Y = -7;
+const GOLFER_BALL_OFFSET_X = 108;
+const BALL_SIZE = 30;
+
+const getGolferPositionForBall = (ballX) => ({
+  x: ballX - GOLFER_BALL_OFFSET_X,
+  y: GOLFER_Y,
+});
 
 const HoleInOne = () => {
   const [mobile, setMobile] = useState(false);
   const [power, setPower] = useState(0);
   const [isCharging, setIsCharging] = useState(false);
-  const [ballPosition, setBallPosition] = useState({ x: 40, y: 40 });
-  const [golferPosition, setGolferPosition] = useState({ x: -70, y: -7 });
+  const [isSwinging, setIsSwinging] = useState(false);
+  const [ballPosition, setBallPosition] = useState(START_BALL_POSITION);
+  const [golferPosition, setGolferPosition] = useState(
+    getGolferPositionForBall(START_BALL_POSITION.x)
+  );
   const [hasWon, setHasWon] = useState(false);
-  const [club, setClub] = useState(null);
+  const [strokes, setStrokes] = useState(0);
+  const [statusMessage, setStatusMessage] = useState(
+    "Hold mouse button to charge your shot, then release to swing."
+  );
 
   const animationRef = useRef(null);
+  const powerIntervalRef = useRef(null);
+  const powerDirectionRef = useRef(1);
+  const currentPowerRef = useRef(0);
   const gameAreaRef = useRef(null);
   const flagRef = useRef(null);
   const hitBallRef = useRef(null);
+  const courseImageRef = useRef(null);
+  const courseCanvasRef = useRef(null);
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -28,9 +49,33 @@ const HoleInOne = () => {
     setMobile(isMobile(userAgent));
   }, []);
 
+  useEffect(() => {
+    currentPowerRef.current = power;
+  }, [power]);
+
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      if (powerIntervalRef.current) {
+        clearInterval(powerIntervalRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = `${basePath}/images/golf/golf-hole.png`;
+    img.onload = () => {
+      courseImageRef.current = img;
+    };
+  }, [basePath]);
+
   const [golferFrame, setGolferFrame] = useState(
     `${basePath}/images/golf/golfer-idle.png`
   );
+
   const chargingFrames = [
     `${basePath}/images/golf/golfer-idle.png`,
     `${basePath}/images/golf/golfer-bottom-left.png`,
@@ -38,6 +83,7 @@ const HoleInOne = () => {
     `${basePath}/images/golf/golfer-top-left.png`,
     `${basePath}/images/golf/golfer-top.png`,
   ];
+
   const releaseFrames = [
     `${basePath}/images/golf/golfer-top.png`,
     `${basePath}/images/golf/golfer-top-left.png`,
@@ -54,12 +100,32 @@ const HoleInOne = () => {
     }
   };
 
-  const handleReset = () => {
-    setPower(0);
+  const clearPowerInterval = () => {
+    if (powerIntervalRef.current) {
+      clearInterval(powerIntervalRef.current);
+      powerIntervalRef.current = null;
+    }
+  };
+
+  const stopPowerCharge = () => {
+    clearPowerInterval();
     setIsCharging(false);
-    setBallPosition({ x: 40, y: 40 });
-    setGolferPosition({ x: -70, y: -7 });
+  };
+
+  const handleReset = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+
+    stopPowerCharge();
+    setPower(0);
+    setIsSwinging(false);
+    setBallPosition(START_BALL_POSITION);
+    setGolferPosition(getGolferPositionForBall(START_BALL_POSITION.x));
     setHasWon(false);
+    setStrokes(0);
+    setStatusMessage("Hold mouse button to charge your shot, then release to swing.");
     setGolferFrame(`${basePath}/images/golf/golfer-idle.png`);
   };
 
@@ -80,126 +146,275 @@ const HoleInOne = () => {
           setTimeout(() => {
             if (onComplete) onComplete();
           }, holdLast);
-        } else {
-          if (onComplete) onComplete();
+        } else if (onComplete) {
+          onComplete();
         }
       }
     }, 100);
   };
 
   const handleMouseDown = () => {
+    if (hasWon || isSwinging) return;
+
+    setStatusMessage("Charging...");
+    powerDirectionRef.current = 1;
+    setPower(0);
     setIsCharging(true);
     animateFrames(chargingFrames);
   };
 
   const handleMouseUp = () => {
-    if (hasWon) return;
-    setIsCharging(false);
+    if (!isCharging || hasWon || isSwinging) return;
+
+    const shotPower = Math.max(currentPowerRef.current, 5);
+    stopPowerCharge();
     setPower(0);
+    setIsSwinging(true);
 
     animateFrames(
       releaseFrames,
       () => {
         setGolferFrame(`${basePath}/images/golf/golfer-idle.png`);
       },
-      800,
-      (frame) => {
-        if (frame === `${basePath}/images/golf/golfer-idle.png`) {
-          hitBall();
+      250,
+      (_, i) => {
+        if (i === 2) {
           playHitBallSound();
+          hitBall(shotPower);
         }
       }
     );
   };
 
-  useEffect(() => {
-    let interval;
-    if (isCharging) {
-      interval = setInterval(() => {
-        setPower((prev) => Math.min(prev + 1, 100));
-      }, 20);
+  const handlePointerDown = (event) => {
+    if (event.currentTarget.setPointerCapture) {
+      event.currentTarget.setPointerCapture(event.pointerId);
     }
-    return () => clearInterval(interval);
+    handleMouseDown();
+  };
+
+  const handlePointerUp = (event) => {
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    handleMouseUp();
+  };
+
+  useEffect(() => {
+    if (isCharging) {
+      powerIntervalRef.current = setInterval(() => {
+        setPower((prev) => {
+          let direction = powerDirectionRef.current;
+          let next = prev + direction * 2;
+
+          if (next >= 100) {
+            next = 100;
+            direction = -1;
+          } else if (next <= 0) {
+            next = 0;
+            direction = 1;
+          }
+
+          powerDirectionRef.current = direction;
+          return next;
+        });
+      }, 16);
+    }
+
+    return clearPowerInterval;
   }, [isCharging]);
 
-  const hitBall = () => {
-    const startX = ballPosition.x;
-    const startY = ballPosition.y;
+  const drawCourseToCanvas = (width, height) => {
+    const img = courseImageRef.current;
+    if (!img || !img.width || !img.height) return null;
 
-    const flagEl = flagRef.current;
-    const gameEl = gameAreaRef.current;
-
-    let flagX = 0;
-    let flagY = 50;
-
-    if (flagEl && gameEl) {
-      const flagRect = flagEl.getBoundingClientRect();
-      const gameRect = gameEl.getBoundingClientRect();
-      flagX = flagRect.left - gameRect.left;
+    if (!courseCanvasRef.current) {
+      courseCanvasRef.current = document.createElement("canvas");
     }
 
-    const targetX = startX + power * 30;
-    const targetY = startY;
+    const canvas = courseCanvasRef.current;
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return null;
+
+    const scale = Math.max(width / img.width, height / img.height);
+    const drawWidth = img.width * scale;
+    const drawHeight = img.height * scale;
+    const drawX = (width - drawWidth) / 2;
+    const drawY = height - drawHeight;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+    return ctx;
+  };
+
+  const isWaterPixel = (r, g, b) => b > 115 && g > 95 && b > r + 25 && b >= g;
+
+  const isInWaterHazardAtRest = (ballCenterX, ballCenterY, gameRect, holeCenterX) => {
+    const nearCup = Math.abs(ballCenterX - holeCenterX) < gameRect.width * 0.05;
+    if (nearCup) return false;
+
+    const ctx = drawCourseToCanvas(
+      Math.round(gameRect.width),
+      Math.round(gameRect.height)
+    );
+
+    if (!ctx) {
+      return false;
+    }
+
+    const sampleY = Math.round(gameRect.height - ballCenterY);
+    const sampleOffsets = [
+      { x: 0, y: 0 },
+      { x: -6, y: 0 },
+      { x: 6, y: 0 },
+      { x: 0, y: -4 },
+      { x: 0, y: 4 },
+    ];
+
+    let waterHits = 0;
+    for (const offset of sampleOffsets) {
+      const sampleX = Math.round(ballCenterX + offset.x);
+      const px = Math.min(Math.max(sampleX, 0), Math.round(gameRect.width) - 1);
+      const py = Math.min(Math.max(sampleY + offset.y, 0), Math.round(gameRect.height) - 1);
+
+      const [r, g, b] = ctx.getImageData(px, py, 1, 1).data;
+      if (isWaterPixel(r, g, b)) {
+        waterHits++;
+      }
+    }
+
+    return waterHits >= 3;
+  };
+
+  const hitBall = (shotPower) => {
+    const gameEl = gameAreaRef.current;
+    const flagEl = flagRef.current;
+
+    if (!gameEl || !flagEl) {
+      setIsSwinging(false);
+      return;
+    }
+
+    let nextStroke = 0;
+    setStrokes((prev) => {
+      nextStroke = prev + 1;
+      return nextStroke;
+    });
+
+    const startX = ballPosition.x;
+    const startY = ballPosition.y;
+    const flagRect = flagEl.getBoundingClientRect();
+    const gameRect = gameEl.getBoundingClientRect();
+    const holeCenterX = flagRect.left - gameRect.left + flagRect.width / 2;
+    const holeCenterYFromTop = flagRect.bottom - gameRect.top - 3;
+    const holeCenterY = gameRect.height - holeCenterYFromTop;
+
+    const maxTravel = Math.max(gameRect.width - startX - 40, 250);
+    const travelDistance = (shotPower / 100) * (maxTravel * 1.15);
+    const targetX = Math.min(startX + travelDistance, gameRect.width - 20);
 
     let t = 0;
-    const duration = 100;
+    const duration = Math.max(45, Math.round(125 - shotPower * 0.55));
+    const peakHeight = Math.max(90, shotPower * 2.9);
+
+    setStatusMessage(`Swing ${nextStroke}: ${Math.round(shotPower)}% power`);
 
     const animate = () => {
       t++;
       const progress = t / duration;
-      const peakHeight = power * 8.5;
       const arc = -4 * peakHeight * progress * (progress - 1);
-
-      const y = startY + (targetY - startY) * progress + arc;
       const x = startX + (targetX - startX) * progress;
+      const y = startY + arc;
 
-      if (Math.abs(x - flagX) < 20 && Math.abs(y - flagY) < 30) {
-        setBallPosition({ x: flagX, y: flagY });
+      const clampedX = Math.min(Math.max(x, 20), gameRect.width - 20);
+      const clampedY = Math.max(y, RESTING_BALL_Y);
+
+      const ballCenterX = clampedX + BALL_SIZE / 2;
+      const ballCenterY = clampedY + BALL_SIZE / 2;
+      const distanceToHole = Math.hypot(
+        ballCenterX - holeCenterX,
+        ballCenterY - holeCenterY
+      );
+
+      if (distanceToHole < 14) {
+        const settledBallX = holeCenterX - BALL_SIZE / 2;
+        const settledBallY = holeCenterY - BALL_SIZE / 2;
+
+        setBallPosition({ x: settledBallX, y: settledBallY });
+        setGolferPosition(getGolferPositionForBall(settledBallX));
         setHasWon(true);
+        setStatusMessage("You win");
+        setIsSwinging(false);
 
-        setGolferFrame(`${basePath}/images/golf/golfer-idle.png`);
-        setGolferPosition({ x: flagX - 110, y: flagY - 46 });
-
-        cancelAnimationFrame(animationRef.current);
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+        }
         return;
       }
 
-      setBallPosition({ x, y });
+      setBallPosition({ x: clampedX, y: clampedY });
 
       if (t < duration) {
         animationRef.current = requestAnimationFrame(animate);
       } else {
-        setGolferFrame(`${basePath}/images/golf/golfer-idle.png`);
-        setGolferPosition({ x: x - 110, y: y - 46 });
+        const settledX = clampedX;
+        const settledCenterX = settledX + BALL_SIZE / 2;
+
+        if (isInWaterHazardAtRest(settledCenterX, RESTING_BALL_Y + BALL_SIZE / 2, gameRect, holeCenterX)) {
+          const dropX = Math.max(
+            START_BALL_POSITION.x,
+            Math.min(settledX - 90, gameRect.width * 0.68)
+          );
+
+          setBallPosition({ x: dropX, y: RESTING_BALL_Y });
+          setGolferPosition(getGolferPositionForBall(dropX));
+          setStatusMessage(
+            "Splash! Ball finished in water. Dropped back on the fairway."
+          );
+        } else {
+          setBallPosition({ x: settledX, y: RESTING_BALL_Y });
+          setGolferPosition(getGolferPositionForBall(settledX));
+          setStatusMessage("Missed the cup. Charge and try again.");
+        }
+
+        setIsSwinging(false);
       }
     };
+
     animate();
   };
-
-  const clubOptions = [
-    { value: "driver", label: "Driver" },
-    { value: "9-iron", label: "9 Iron" },
-    { value: "putter", label: "Putter" },
-  ];
 
   if (mobile) return <h1>Sorry, this is only available on desktop.</h1>;
 
   return (
     <React.Fragment>
       <Hero />
-      {hasWon && <div className={styles.winMessage}>You Win!</div>}
+
+      <div className={styles.hud}>
+        <p className={styles.statusText}>{statusMessage}</p>
+        <p className={styles.strokeCount}>Strokes: {strokes}</p>
+        <div className={styles.powerBar}>
+          <div className={styles.powerFill} style={{ width: `${power}%` }} />
+        </div>
+      </div>
+
       <div className={styles.gameContainer}>
-        {/* <Dropdown options={clubOptions} onSelect={setClub} /> */}
         <div
           className={styles.golfArea}
           ref={gameAreaRef}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
         >
           <Image
             src={`${basePath}/images/golf/golf-hole.png`}
             alt="Golf Hole"
             fill
+            draggable={false}
             style={{ objectFit: "cover", objectPosition: "bottom center" }}
           />
 
@@ -210,7 +425,13 @@ const HoleInOne = () => {
               bottom: `${golferPosition.y}px`,
             }}
           >
-            <Image src={golferFrame} alt="Golfer" width={200} height={200} />
+            <Image
+              src={golferFrame}
+              alt="Golfer"
+              width={200}
+              height={200}
+              draggable={false}
+            />
           </div>
 
           <div
@@ -223,8 +444,9 @@ const HoleInOne = () => {
             <Image
               src={`${basePath}/images/golf/golf-ball.png`}
               alt="Golf Ball"
-              width={30}
-              height={30}
+              width={BALL_SIZE}
+              height={BALL_SIZE}
+              draggable={false}
             />
           </div>
 
@@ -232,8 +454,11 @@ const HoleInOne = () => {
             ref={flagRef}
             className={styles.flag}
             style={{ right: "50px", bottom: "60px" }}
+            aria-label="Golf flag"
           >
-            🚩
+            <span className={styles.flagPole} />
+            <span className={styles.flagBanner} />
+            <span className={styles.cup} />
           </div>
         </div>
 
@@ -243,8 +468,9 @@ const HoleInOne = () => {
           preload="auto"
         />
       </div>
+
       <Button
-        title="Reset Game"
+        title="Reset Round"
         className={styles.resetButton}
         onClick={handleReset}
       />

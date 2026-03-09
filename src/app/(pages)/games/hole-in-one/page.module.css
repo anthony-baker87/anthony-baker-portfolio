@@ -1,62 +1,125 @@
 .gameContainer {
-  width: 1200px;
+  width: min(1200px, 95vw);
   height: 500px;
-  border: 2px solid black;
+  border: 2px solid #111;
+  border-radius: 12px;
   position: relative;
   background: #a2d5f2;
   overflow: hidden;
+  margin: 0 auto;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.hud {
+  width: min(1200px, 95vw);
+  margin: 0 auto 12px auto;
+  color: #fff;
+}
+
+.statusText {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+}
+
+.strokeCount {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: #dbeafe;
 }
 
 .powerBar {
-  width: 80%;
-  height: 20px;
-  background: #ccc;
-  margin: 10px auto;
-  border-radius: 10px;
+  width: 100%;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 .powerFill {
   height: 100%;
-  background: #4caf50;
-  transition: width 0.05s linear;
+  background: linear-gradient(90deg, #34d399, #f59e0b, #ef4444);
+  transition: width 0.03s linear;
 }
 
 .golfArea {
   position: relative;
   width: 100%;
   height: 500px;
+  cursor: crosshair;
+  user-select: none;
 }
+
 .golfer {
   position: absolute;
   font-size: 24px;
+  z-index: 4;
 }
 
 .ball {
   position: absolute;
   font-size: 24px;
+  z-index: 5;
 }
 
 .flag {
   position: absolute;
-  font-size: 24px;
+  width: 20px;
+  height: 52px;
+  z-index: 6;
+}
+
+.flagPole {
+  position: absolute;
+  left: 8px;
+  top: 4px;
+  width: 3px;
+  height: 38px;
+  background: #f8fafc;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.flagBanner {
+  position: absolute;
+  left: 10px;
+  top: 6px;
+  width: 14px;
+  height: 10px;
+  background: #ef4444;
+  clip-path: polygon(0 0, 100% 18%, 78% 50%, 100% 80%, 0 100%);
+}
+
+.cup {
+  position: absolute;
+  left: 2px;
+  bottom: 0;
+  width: 16px;
+  height: 6px;
+  background: #111827;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 .resetButton {
-  width: 120px;
+  width: 140px;
   height: 40px;
   font-size: 16px;
-  margin-left: 2px;
   background-color: white;
   color: black;
   font-weight: bold;
   border-radius: 8px;
   border: 2px solid black;
   cursor: pointer;
-  margin: 10px 0 0 0;
+  margin: 10px auto 0 auto;
   padding: 10px;
+  display: block;
 }
 
 .winMessage {
-  color: white;
+  width: min(1200px, 95vw);
+  margin: 0 auto 8px auto;
+  color: #fef08a;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
