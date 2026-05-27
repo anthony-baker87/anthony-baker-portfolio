@@ -19,15 +19,16 @@ const Navigation = () => {
 
   const links = [
     { href: "/", label: "Home" },
+    { href: "/skills", label: "Technical Skills" },
     { href: "/professional-work", label: "Professional Work" },
     { href: "/projects", label: "Projects" },
-    { href: "/skills", label: "Technical Skills" },
-    { href: "/github-repositories", label: "GitHub Repositories" },
     {
       href: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/pdfs/AnthonyBakerResume.pdf`,
       label: "Resume",
       external: true,
     },
+    { href: "/github-repositories", label: "GitHub Repositories" },
+    { href: "/interview-prep", label: "Interview Prep" },
     {
       href: "/games",
       label: "Games",
