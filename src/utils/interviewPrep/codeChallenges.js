@@ -1110,7 +1110,8 @@ export const codeChallenges = [
       }
     }
   };
-  const city = user.profile.location.city;
+  // TODO: derive city from the user object.
+  const city = "Unknown";
 
   return (
     <section className="preview-card">
