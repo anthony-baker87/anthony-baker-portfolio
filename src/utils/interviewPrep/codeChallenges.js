@@ -309,7 +309,14 @@ const passesButtonProps = (code) =>
   /\(\s*\{[^}]*children|label|text[\s\S]*onClick[\s\S]*\}\s*\)/.test(code) ||
   /\(\s*props\s*\)/.test(code);
 
-const usesReusableButton = (code) => /<\w*Button[\s\S]*onClick=/.test(code);
+const usesReusableButton = (code) => {
+  const reusableButtonTags = code.match(/<\w*Button\b[^>]*>/g) || [];
+  const buttonsWithHandlers = reusableButtonTags.filter((tag) =>
+    /onClick=\{\s*[^}\s]/.test(tag),
+  );
+
+  return buttonsWithHandlers.length >= 2;
+};
 
 const focusesInputRef = (code) => /\.current\.focus\(\)/.test(code);
 
@@ -1097,9 +1104,13 @@ export const codeChallenges = [
   // TODO: safely read the user's city from nested profile data.
   const user = {
     name: "Anthony",
-    profile: null
+    profile: {
+      location: {
+        city: "Phoenix"
+      }
+    }
   };
-  const city = "Unknown";
+  const city = user.profile.location.city;
 
   return (
     <section className="preview-card">
@@ -1435,7 +1446,7 @@ export const codeChallenges = [
   );
 }`,
     tests: [
-      { label: "Uses Set for uniqueness", check: dedupesWithSet },
+      { label: "Removes duplicate values", check: dedupesWithSet },
       { label: "Keeps original array intact", check: createsUniqueNumsFromSet },
       { label: "Renders unique values", check: rendersUniqueNums },
       { label: "Includes source array", check: keepsNumsAsSourceArray },
@@ -1632,7 +1643,7 @@ export const codeChallenges = [
 
   return (
     <article className="preview-card">
-      <h2>{app.name}</h2>
+      <h2>TODO: app name</h2>
       <p>TODO: status</p>
     </article>
   );

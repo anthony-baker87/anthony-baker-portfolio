@@ -476,6 +476,64 @@ export default function CodeChallengeInterviewPrep() {
     localStorage.removeItem(completedStorageKey);
   };
 
+  const resetChallengeGroup = (challenges) => {
+    const challengeIds = challenges.map((challenge) => challenge.id);
+    const challengeIdSet = new Set(challengeIds);
+
+    setCodeByChallenge((current) => {
+      const nextCodeByChallenge = { ...current };
+
+      challengeIds.forEach((challengeId) => {
+        nextCodeByChallenge[challengeId] = getStarterCode(challengeId);
+      });
+
+      const savedSolutions = Object.fromEntries(
+        Object.entries(nextCodeByChallenge).filter(([challengeId, code]) => {
+          const starter = getStarterCode(challengeId);
+
+          return starter && code !== starter;
+        }),
+      );
+
+      localStorage.setItem(solutionsStorageKey, JSON.stringify(savedSolutions));
+
+      return nextCodeByChallenge;
+    });
+    setCheckedChallenges((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(
+          ([challengeId]) => !challengeIdSet.has(challengeId),
+        ),
+      ),
+    );
+    setCompletedChallenges((current) => {
+      const nextCompletedChallenges = current.filter(
+        (challengeId) => !challengeIdSet.has(challengeId),
+      );
+
+      localStorage.setItem(
+        completedStorageKey,
+        JSON.stringify(nextCompletedChallenges),
+      );
+
+      return nextCompletedChallenges;
+    });
+    setRuntimeCheckResults((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(
+          ([key]) =>
+            !challengeIds.some((challengeId) =>
+              key.startsWith(`${challengeId}:`),
+            ),
+        ),
+      ),
+    );
+
+    if (challengeIdSet.has(activeChallenge)) {
+      setConsoleMessages([]);
+    }
+  };
+
   const selectChallenge = (challengeId) => {
     const nextChallenge = codeChallenges.find(
       (challenge) => challenge.id === challengeId,
@@ -709,22 +767,31 @@ export default function CodeChallengeInterviewPrep() {
                   className={styles.challengeGroup}
                   key={group.difficulty}
                 >
-                  <button
-                    className={styles.challengeGroupButton}
-                    type="button"
-                    aria-expanded={isOpen}
-                    aria-controls={panelId}
-                    onClick={() =>
-                      setOpenChallengeDifficulty((current) =>
-                        current === group.difficulty ? "" : group.difficulty,
-                      )
-                    }
-                  >
-                    <span>{group.difficulty}</span>
-                    <span>
-                      {completedInGroup}/{group.challenges.length} complete
-                    </span>
-                  </button>
+                  <div className={styles.challengeGroupHeader}>
+                    <button
+                      className={styles.challengeGroupButton}
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() =>
+                        setOpenChallengeDifficulty((current) =>
+                          current === group.difficulty ? "" : group.difficulty,
+                        )
+                      }
+                    >
+                      <span>{group.difficulty}</span>
+                      <span>
+                        {completedInGroup}/{group.challenges.length} complete
+                      </span>
+                    </button>
+                    <button
+                      className={styles.challengeGroupResetButton}
+                      type="button"
+                      onClick={() => resetChallengeGroup(group.challenges)}
+                    >
+                      Reset {group.difficulty}
+                    </button>
+                  </div>
 
                   {isOpen ? (
                     <div
