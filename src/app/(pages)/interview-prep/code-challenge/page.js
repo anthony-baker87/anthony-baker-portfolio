@@ -712,6 +712,25 @@ export default function CodeChallengeInterviewPrep() {
     });
   };
 
+  const handleEditorDoubleClick = (event) => {
+    const target = event.currentTarget;
+
+    requestAnimationFrame(() => {
+      const selectedText = target.value.slice(
+        target.selectionStart,
+        target.selectionEnd,
+      );
+      const trimmedText = selectedText.replace(/\s+$/, "");
+
+      if (trimmedText.length !== selectedText.length) {
+        target.setSelectionRange(
+          target.selectionStart,
+          target.selectionStart + trimmedText.length,
+        );
+      }
+    });
+  };
+
   return (
     <div className={styles.page}>
       <Link href="/interview-prep" className={styles.backLink}>
@@ -1015,6 +1034,7 @@ export default function CodeChallengeInterviewPrep() {
                     }
                   }}
                   onKeyDown={isViewingCss ? undefined : handleEditorKeyDown}
+                  onDoubleClick={handleEditorDoubleClick}
                   aria-label={
                     isViewingCss
                       ? `${currentChallenge.title} preview CSS`

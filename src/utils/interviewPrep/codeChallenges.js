@@ -96,7 +96,10 @@ const filtersActiveUsers = (code) =>
 
 const mapsToUserNames = (code) => /\.map\(/.test(code) && /\.name\b/.test(code);
 
-const sortsNamesAlphabetically = (code) => /\.sort\(/.test(code);
+const sortsNamesAlphabetically = (code) =>
+  /\.sort\(\s*\(?\s*(\w+)\s*,\s*(\w+)\s*\)?\s*=>[\s\S]{0,120}(?:\1\.name\s*\.localeCompare\(\s*\2\.name|\2\.name\s*\.localeCompare\(\s*\1\.name|\1\s*\.localeCompare\(\s*\2|\2\s*\.localeCompare\(\s*\1|\1\s*[<>]\s*\2|\2\s*[<>]\s*\1)/.test(
+    code,
+  ) || /\.map\([\s\S]{0,120}\.name[\s\S]{0,120}\)\s*\.sort\(\s*\)/.test(code);
 
 const rendersChipsFromNames = (code) => /names\.map\(\s*\(?\s*\w+/.test(code);
 
@@ -333,7 +336,8 @@ const fetchesJsonPlaceholderUsers = (code) =>
   );
 
 const catchesFetchErrors = (code) =>
-  /\.catch\(|try\s*\{[\s\S]*catch\s*\(/.test(code);
+  (/\.catch\(/.test(code) || /try\s*\{[\s\S]*catch\s*\(/.test(code)) &&
+  /setError\(/.test(code);
 
 const displaysErrorMessage = (code) =>
   /error\s*&&|if\s*\(\s*error\s*\)|\?\s*<[^>]+>[\s\S]*error/.test(code);
@@ -377,10 +381,22 @@ const rendersDerivedCityValue = (code) =>
 
 const memoizesReactComponent = (code) => /React\.memo\(|\bmemo\(/.test(code);
 
-const rendersMemoizedComponent = (code) => /<Memo\w+|<\w*Memo\w*/.test(code);
+const getMemoizedComponentNames = (code) =>
+  [
+    ...code.matchAll(
+      /(?:const|let|var)\s+([A-Z]\w*)\s*=\s*(?:React\.)?memo\(/g,
+    ),
+  ].map((match) => match[1]);
+
+const rendersOptimizedChildComponent = (code) =>
+  getMemoizedComponentNames(code).some((componentName) =>
+    new RegExp(`<${componentName}\\b`).test(code),
+  );
 
 const passesCountToMemoizedComponent = (code) =>
-  memoizesReactComponent(code) && /count=\{\s*count\s*\}/.test(code);
+  getMemoizedComponentNames(code).some((componentName) =>
+    new RegExp(`<${componentName}\\b[^>]*count=\\{\\s*count\\s*\\}`).test(code),
+  );
 
 export const bookingDateDifferenceCheck = {
   id: "booking-calendar-date-difference",
@@ -481,12 +497,7 @@ export const codeChallenges = [
       <input placeholder="New todo" />
       <button type="button">Add</button>
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            {todo.text}
-            <button type="button">Remove</button>
-          </li>
-        ))}
+        <li>TODO: render todo items here.</li>
       </ul>
     </section>
   );
@@ -970,20 +981,20 @@ export const codeChallenges = [
       },
     ],
     instructions:
-      "Build a user fetcher that stores API data and shows an error message when the request fails.",
+      "Build a user fetcher that stores API data and catches request failures so an error message can be shown.",
     starter: `function ApiErrorHandling() {
   // TODO: fetch users and store any request error.
   const users = [];
   const error = "";
 
   useEffect(() => {
-    // TODO: fetch users and handle failures.
+    // TODO: fetch users and catch request failures.
   }, []);
 
   return (
     <section className="preview-card">
       <h2>API Users</h2>
-      {error && <p className="error">Error: {error}</p>}
+      <p>TODO: show an error message when a request fails.</p>
       {users.map((user) => (
         <p key={user.id}>{user.name}</p>
       ))}
@@ -1000,7 +1011,7 @@ export const codeChallenges = [
         check: "const [error, setError] = useState",
       },
       { label: "Fetches user data", check: fetchesJsonPlaceholderUsers },
-      { label: "Handles fetch errors", check: catchesFetchErrors },
+      { label: "Catches request failures", check: catchesFetchErrors },
       { label: "Displays error message", check: displaysStateErrorMessage },
     ],
   },
@@ -1129,14 +1140,14 @@ export const codeChallenges = [
   },
   {
     id: "react-memo",
-    title: "React.memo",
+    title: "Render Optimization",
     skill: "Render Optimization",
     difficulty: "Medium",
-    componentName: "ReactMemoDemo",
+    componentName: "RenderOptimizationDemo",
     instructions:
-      "Build a small React.memo example that memoizes a child component to avoid unnecessary re-renders.",
-    starter: `function ReactMemoDemo() {
-  // TODO: wrap the child display component in React.memo.
+      "A parent component updates frequently, but one child component receives the same props most of the time. Update the code so the child avoids unnecessary re-renders when its props have not changed.",
+    starter: `function RenderOptimizationDemo() {
+  // TODO: prevent the child display from re-rendering when its props are unchanged.
   const count = 0;
 
   function CountDisplay({ count }) {
@@ -1145,7 +1156,7 @@ export const codeChallenges = [
 
   return (
     <section className="preview-card">
-      <h2>React.memo</h2>
+      <h2>Render Optimization</h2>
       <CountDisplay count={count} />
       <button type="button">Increment</button>
     </section>
@@ -1156,8 +1167,8 @@ export const codeChallenges = [
         label: "Stores count in state",
         check: "const [count, setCount] = useState",
       },
-      { label: "Uses React.memo", check: memoizesReactComponent },
-      { label: "Renders memoized component", check: rendersMemoizedComponent },
+      { label: "Applies the right optimization", check: memoizesReactComponent },
+      { label: "Renders optimized child", check: rendersOptimizedChildComponent },
       { label: "Passes count as prop", check: passesCountToMemoizedComponent },
     ],
   },
@@ -1309,9 +1320,9 @@ export const codeChallenges = [
   return (
     <section className="preview-card tabs-demo">
       <div className="tab-list">
-        {tabs.map((tab) => (
-          <button type="button" key={tab.value}>{tab.label}</button>
-        ))}
+        <button type="button">Overview</button>
+        <button type="button">Projects</button>
+        <button type="button">Contact</button>
       </div>
       <p>{tabs[0].panel}</p>
     </section>
@@ -1328,7 +1339,7 @@ export const codeChallenges = [
     id: "throttle",
     title: "Throttle Clicks",
     skill: "Rate Limiting + Refs",
-    difficulty: "Medium",
+    difficulty: "Hard",
     componentName: "ThrottleCounter",
     instructions:
       "Build a throttled counter where rapid clicks can only increment once per delay window.",
