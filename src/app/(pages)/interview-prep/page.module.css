@@ -484,9 +484,33 @@
   font-size: 0.9rem;
   font-weight: 900;
   text-align: left;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.challengeGroupButton span:last-child {
+.challengeGroupName {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.challengeGroupIndicator {
+  display: inline-grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid rgba(125, 211, 252, 0.34);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  color: #bae6fd;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.challengeGroupProgress {
   color: #bae6fd;
   font-size: 0.78rem;
   font-weight: 800;
@@ -496,6 +520,22 @@
 .challengeGroupButton:hover {
   border-color: #38bdf8;
   background: rgba(14, 116, 144, 0.28);
+}
+
+.openChallengeGroupButton {
+  border-color: #fbbf24;
+  background:
+    linear-gradient(90deg, rgba(180, 83, 9, 0.34), rgba(14, 116, 144, 0.2)),
+    rgba(2, 6, 23, 0.68);
+  box-shadow:
+    inset 4px 0 0 #fbbf24,
+    0 0 0 1px rgba(251, 191, 36, 0.12);
+}
+
+.openChallengeGroupButton .challengeGroupIndicator {
+  border-color: rgba(251, 191, 36, 0.72);
+  background: rgba(120, 53, 15, 0.56);
+  color: #fef3c7;
 }
 
 .challengeGroupResetButton {
@@ -745,10 +785,8 @@
 .editor {
   width: 100%;
   min-height: 540px;
-  resize: vertical;
   border: 1px solid rgba(125, 211, 252, 0.42);
   border-radius: 8px;
-  padding: 16px;
   background: #020617;
   color: #d9f99d;
   font-family: var(--font-geist-mono), Consolas, monospace;
@@ -761,11 +799,51 @@
   outline: none;
 }
 
+.editor :global(.cm-editor) {
+  min-height: 540px;
+  border-radius: 8px;
+  background: #020617;
+  color: #d9f99d;
+  font-family: var(--font-geist-mono), Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.editor :global(.cm-editor.cm-focused) {
+  outline: none;
+}
+
+.editor :global(.cm-scroller) {
+  min-height: 540px;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.editor :global(.cm-content) {
+  padding: 16px 0;
+}
+
+.editor :global(.cm-line) {
+  padding: 0 16px;
+}
+
+.editor :global(.cm-gutters) {
+  border-color: rgba(125, 211, 252, 0.18);
+  background: #020617;
+  color: #64748b;
+}
+
+.editor :global(.cm-lintRange-error) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3' viewBox='0 0 6 3'%3E%3Cpath d='M0 2.5 Q1.5 .5 3 2.5 T6 2.5' stroke='%23fb7185' fill='none' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-position: left bottom;
+  background-repeat: repeat-x;
+}
+
 .readOnlyEditor {
   color: #bae6fd;
 }
 
-.editor:focus {
+.editor:focus-within {
   border-color: #fbbf24;
   box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.14);
 }

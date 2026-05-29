@@ -79,6 +79,43 @@ const updatesEmailField = (code) =>
   /email\s*:\s*\w+\.target\.value/.test(code) ||
   /\[\s*['"]email['"]\s*\]\s*:\s*\w+\.target\.value/.test(code);
 
+const updatesPasswordField = (code) =>
+  /password\s*:\s*\w+\.target\.value/.test(code) ||
+  /\[\s*['"]password['"]\s*\]\s*:\s*\w+\.target\.value/.test(code);
+
+const storesLoginFormValues = (code) =>
+  /const\s*\[\s*form\s*,\s*setForm\s*\]\s*=\s*useState/.test(code) ||
+  (/const\s*\[\s*email\s*,\s*setEmail\s*\]\s*=\s*useState/.test(code) &&
+    /const\s*\[\s*password\s*,\s*setPassword\s*\]\s*=\s*useState/.test(code));
+
+const rendersLoginFields = (code) =>
+  /<input[\s\S]*(?:type=["']email["']|placeholder=["']Email["'])/.test(code) &&
+  /<input[\s\S]*type=["']password["']/.test(code);
+
+const updatesLoginFields = (code) =>
+  (/\[\s*\w+\.target\.(?:name|id)\s*\]\s*:\s*\w+\.target\.value/.test(
+    code,
+  ) &&
+    /name=["']email["']|id=["']email["']/.test(code) &&
+    /name=["']password["']|id=["']password["']/.test(code)) ||
+  ((updatesEmailField(code) ||
+    /setEmail\(\s*\w+\.target\.value\s*\)/.test(code)) &&
+    (/password\s*:\s*\w+\.target\.value/.test(code) ||
+      /\[\s*['"]password['"]\s*\]\s*:\s*\w+\.target\.value/.test(code) ||
+      /setPassword\(\s*\w+\.target\.value\s*\)/.test(code)));
+
+const handlesLoginSubmit = (code) =>
+  /<form[\s\S]*onSubmit=\{/.test(code) && /\.preventDefault\(\)/.test(code);
+
+const validatesLoginCredentials = (code) =>
+  /setError\(/.test(code) &&
+  /email/.test(code) &&
+  /password/.test(code) &&
+  /@|includes\(|\.trim\(\)|\.length/.test(code);
+
+const displaysLoginError = (code) =>
+  /error\s*&&[\s\S]*<[^>]+[\s\S]*\{?\s*error\s*\}?/.test(code);
+
 const rendersStatusValue = (code) =>
   /\{\s*app(?:\.status|\[['"]status['"]\])\s*\}/.test(code);
 
@@ -191,6 +228,12 @@ const updatesThrottledCount = (code) =>
 const createsDebounceHandler = (code) =>
   /setTimeout\(/.test(code) && /clearTimeout\(/.test(code);
 
+const updatesDebouncedSearchInput = (code) =>
+  /value=\{\s*text\s*\}/.test(code) &&
+  /onChange=\{\(?\s*(\w+)\s*\)?\s*=>[\s\S]{0,120}setText\(\s*\1\.target\.value\s*\)/.test(
+    code,
+  );
+
 const storesDebouncedValue = (code) =>
   /const\s*\[\s*(debounced\w*|result|search|value)\s*,\s*set\w+\s*\]\s*=\s*useState/.test(
     code,
@@ -265,7 +308,11 @@ const rendersSortedObjectEntries = (code) =>
   sortsObjectByKeys(code) && /Object\.entries\(\s*ordered\s*\)/.test(code);
 
 const usesEventDelegation = (code) =>
-  /onClick=\{/.test(code) && /\.target/.test(code);
+  /<(?:div|ul|section)\b[^>]*onClick=\{[^}]+\}[^>]*>[\s\S]*\.map\(/.test(
+    code,
+  ) &&
+  !/<button\b[^>]*onClick=/.test(code) &&
+  /\.target/.test(code);
 
 const readsDelegatedId = (code) =>
   /dataset\.\w+|getAttribute\(\s*['"]data-/.test(code);
@@ -419,7 +466,7 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>Counter</h2>
-      <strong>{count}</strong>
+      <strong>0</strong>
       <button type="button">Increment</button>
     </section>
   );
@@ -453,9 +500,7 @@ export const codeChallenges = [
       <h2>User Directory</h2>
       <input aria-label="Search users" placeholder="Search users" />
       <ul>
-        {visibleUsers.map((user) => (
-          <li key={user}>{user}</li>
-        ))}
+        <li>TODO: render matching users here.</li>
       </ul>
     </section>
   );
@@ -963,6 +1008,8 @@ export const codeChallenges = [
         check: "const [error, setError] = useState",
       },
       { label: "Updates email field", check: updatesEmailField },
+      { label: "Updates password field", check: updatesPasswordField },
+      { label: "Handles form submit", check: handlesLoginSubmit },
       { label: "Sets validation error", check: "setError(" },
     ],
   },
@@ -1013,6 +1060,32 @@ export const codeChallenges = [
       { label: "Fetches user data", check: fetchesJsonPlaceholderUsers },
       { label: "Catches request failures", check: catchesFetchErrors },
       { label: "Displays error message", check: displaysStateErrorMessage },
+    ],
+  },
+  {
+    id: "login-form-from-scratch",
+    title: "Login Form From Scratch",
+    skill: "Forms + Validation",
+    difficulty: "Hard",
+    componentName: "LoginFormFromScratch",
+    instructions:
+      "Build a complete login form from scratch with controlled email and password fields, submit handling, validation, and an error message.",
+    starter: `function LoginFormFromScratch() {
+  // TODO: build a controlled login form from scratch.
+  return (
+    <section className="preview-card">
+      <h2>Login</h2>
+      <p>TODO: build login form.</p>
+    </section>
+  );
+}`,
+    tests: [
+      { label: "Stores form values", check: storesLoginFormValues },
+      { label: "Renders login fields", check: rendersLoginFields },
+      { label: "Updates both fields", check: updatesLoginFields },
+      { label: "Handles form submit", check: handlesLoginSubmit },
+      { label: "Validates credentials", check: validatesLoginCredentials },
+      { label: "Displays validation error", check: displaysLoginError },
     ],
   },
   {
@@ -1127,7 +1200,7 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>Optional Chaining</h2>
-      <p>City: {city}</p>
+      <p>City: TODO</p>
     </section>
   );
 }`,
@@ -1157,7 +1230,7 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>Render Optimization</h2>
-      <CountDisplay count={count} />
+      <CountDisplay />
       <button type="button">Increment</button>
     </section>
   );
@@ -1167,8 +1240,14 @@ export const codeChallenges = [
         label: "Stores count in state",
         check: "const [count, setCount] = useState",
       },
-      { label: "Applies the right optimization", check: memoizesReactComponent },
-      { label: "Renders optimized child", check: rendersOptimizedChildComponent },
+      {
+        label: "Applies the right optimization",
+        check: memoizesReactComponent,
+      },
+      {
+        label: "Renders optimized child",
+        check: rendersOptimizedChildComponent,
+      },
       { label: "Passes count as prop", check: passesCountToMemoizedComponent },
     ],
   },
@@ -1192,12 +1271,10 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>FAQ</h2>
-      {faqs.map((faq) => (
-        <div className="accordion-item" key={faq.id}>
-          <button type="button">{faq.question}</button>
-          <p>{faq.answer}</p>
-        </div>
-      ))}
+      <div className="accordion-item">
+        <button type="button">TODO: question</button>
+        <p>TODO: answer</p>
+      </div>
     </section>
   );
 }`,
@@ -1231,12 +1308,11 @@ export const codeChallenges = [
     { id: 3, title: "Iterate", description: "Improve the experience." }
   ];
   const index = 0;
-  const slide = slides[index];
 
   return (
     <section className="preview-card carousel">
-      <h2>{slide.title}</h2>
-      <p>{slide.description}</p>
+      <h2>TODO: active slide title</h2>
+      <p>TODO: active slide description</p>
       <div className="carousel-actions">
         <button type="button">Previous</button>
         <button type="button">Next</button>
@@ -1395,6 +1471,7 @@ export const codeChallenges = [
         label: "Stores input text in state",
         check: "const [text, setText] = useState",
       },
+      { label: "Updates input text", check: updatesDebouncedSearchInput },
       { label: "Stores debounced value", check: storesDebouncedValue },
       { label: "Creates debounce timer", check: createsDebounceHandler },
       { label: "Updates after delay", check: updatesDebouncedValue },
@@ -1453,7 +1530,7 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>Dedupe Array</h2>
-      <p>{uniqueNums.join(", ")}</p>
+      <p>TODO: render unique values.</p>
     </section>
   );
 }`,
@@ -1484,7 +1561,7 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>Sorted Users</h2>
-      {sortedUsers.map((user) => <p key={user.id}>{user.name}</p>)}
+      <p>TODO: render sorted users.</p>
     </section>
   );
 }`,
@@ -1550,7 +1627,7 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>Rotate Matrix</h2>
-      {rotated.map((row) => <p key={row.join("-")}>{row.join(" ")}</p>)}
+      <p>TODO: render rotated rows.</p>
     </section>
   );
 }`,
@@ -1581,9 +1658,7 @@ export const codeChallenges = [
   return (
     <section className="preview-card">
       <h2>Sorted Object</h2>
-      {Object.entries(ordered).map(([key, value]) => (
-        <p key={key}>{key}: {value}</p>
-      ))}
+      <p>TODO: render ordered entries.</p>
     </section>
   );
 }`,
@@ -1690,7 +1765,7 @@ export const codeChallenges = [
     <section className="preview-card">
       <h2>Active Users</h2>
       <div className="chips">
-        <span className="chip">{names[0]}</span>
+        <span className="chip">TODO: name</span>
       </div>
     </section>
   );
@@ -2060,7 +2135,7 @@ export function buildCodePreview(code, challengeId) {
         <main id="root"></main>
         <script type="text/babel">
           const sendConsoleMessage = (level, args) => {
-            window.parent.postMessage({
+            const message = {
               source: "code-challenge-console",
               challengeId: ${JSON.stringify(challengeId)},
               level,
@@ -2075,7 +2150,16 @@ export function buildCodePreview(code, challengeId) {
                   return String(item);
                 }
               }),
-            }, "*");
+            };
+
+            try {
+              if (window.parent.__codeChallengeConsoleMessage) {
+                window.parent.__codeChallengeConsoleMessage(message);
+                return;
+              }
+            } catch {}
+
+            window.parent.postMessage(message, "*");
           };
 
           ["log", "info", "warn", "error"].forEach((level) => {
@@ -2085,6 +2169,14 @@ export function buildCodePreview(code, challengeId) {
               original(...args);
             };
           });
+
+          document.addEventListener(
+            "submit",
+            (event) => {
+              event.preventDefault();
+            },
+            true,
+          );
 
           ${
             preparedCode.error

@@ -1,7 +1,11 @@
 "use client";
 
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { linter } from "@codemirror/lint";
+import { oneDark } from "@codemirror/theme-one-dark";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { format } from "prettier/standalone";
 import * as babelPlugin from "prettier/plugins/babel";
 import * as estreePlugin from "prettier/plugins/estree";
@@ -28,6 +32,28 @@ const reactHookNames = [
 const componentEditorFile = "component";
 const cssEditorFile = "css";
 const challengeDifficultyOrder = ["Easy", "Medium", "Hard"];
+const codeMirrorBaseExtensions = [javascript({ jsx: true }), oneDark];
+
+const getSyntaxErrorPosition = (errorMessage) => {
+  const match = errorMessage.match(/\((\d+):(\d+)\)/);
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    line: Number(match[1]),
+    column: Number(match[2]),
+  };
+};
+
+const getDocumentOffset = (doc, position) => {
+  try {
+    return doc.line(position.line).from + position.column;
+  } catch {
+    return 0;
+  }
+};
 
 const getRuntimeCheckKey = (challengeId, testId) => `${challengeId}:${testId}`;
 const isRuntimeCheck = (check) =>
@@ -74,7 +100,6 @@ const normalizeOldNoopStarterHandlers = (code) =>
     )
     .replaceAll(" onChange={handleUpload}", "")
     .replaceAll(" onClick={sendMessage}", "")
-    .replaceAll(" onSubmit={handleSubmit}", "")
     .replaceAll(" onClick={handleClick}", "")
     .replaceAll(" onClick={addThree}", "")
     .replaceAll("value={query}", "")
@@ -160,6 +185,45 @@ export default function CodeChallengeInterviewPrep() {
   const currentCode = codeByChallenge[activeChallenge];
   const editorValue =
     activeEditorFile === cssEditorFile ? codeChallengePreviewCss : currentCode;
+  const isViewingCss = activeEditorFile === cssEditorFile;
+  const editorExtensions = useMemo(() => {
+    if (isViewingCss) {
+      return codeMirrorBaseExtensions;
+    }
+
+    return [
+      ...codeMirrorBaseExtensions,
+      linter(async (view) => {
+        try {
+          await format(moveImportsToTop(view.state.doc.toString()), {
+            parser: "babel",
+            plugins: [babelPlugin, estreePlugin],
+          });
+
+          return [];
+        } catch (error) {
+          const message =
+            error instanceof Error
+              ? error.message.split("\n")[0]
+              : "Syntax error";
+          const position = getSyntaxErrorPosition(message);
+          const from = position
+            ? getDocumentOffset(view.state.doc, position)
+            : view.state.selection.main.head;
+          const to = Math.min(from + 1, view.state.doc.length);
+
+          return [
+            {
+              from,
+              to: Math.max(to, from),
+              severity: "error",
+              message,
+            },
+          ];
+        }
+      }),
+    ];
+  }, [isViewingCss]);
   const challengesByDifficulty = challengeDifficultyOrder
     .map((difficulty) => ({
       difficulty,
@@ -168,7 +232,6 @@ export default function CodeChallengeInterviewPrep() {
       ),
     }))
     .filter((group) => group.challenges.length > 0);
-  const isViewingCss = activeEditorFile === cssEditorFile;
   const hasRunChecks = checkedChallenges[activeChallenge] === currentCode;
   const codeMatchesCheck = (test) => {
     const { check } = test;
@@ -252,9 +315,7 @@ export default function CodeChallengeInterviewPrep() {
   }, []);
 
   useEffect(() => {
-    const handleConsoleMessage = (event) => {
-      const data = event.data;
-
+    const appendConsoleMessage = (data) => {
       if (
         data?.source !== consoleMessageSource ||
         data.challengeId !== activeChallenge
@@ -271,10 +332,18 @@ export default function CodeChallengeInterviewPrep() {
         },
       ]);
     };
+    const handleConsoleMessage = (event) => {
+      appendConsoleMessage(event.data);
+    };
 
+    window.__codeChallengeConsoleMessage = appendConsoleMessage;
     window.addEventListener("message", handleConsoleMessage);
 
     return () => {
+      if (window.__codeChallengeConsoleMessage === appendConsoleMessage) {
+        delete window.__codeChallengeConsoleMessage;
+      }
+
       window.removeEventListener("message", handleConsoleMessage);
     };
   }, [activeChallenge]);
@@ -580,7 +649,33 @@ export default function CodeChallengeInterviewPrep() {
     }
   };
 
-  const runChecks = () => {
+  const validateCurrentCodeSyntax = async () => {
+    await format(moveImportsToTop(currentCode), {
+      parser: "babel",
+      plugins: [babelPlugin, estreePlugin],
+    });
+  };
+
+  const runChecks = async () => {
+    try {
+      await validateCurrentCodeSyntax();
+      setFormatError("");
+    } catch (error) {
+      setFormatError(
+        error instanceof Error
+          ? error.message.split("\n")[0]
+          : "Fix syntax errors before running checks.",
+      );
+      setCheckedChallenges((current) => {
+        const nextCheckedChallenges = { ...current };
+        delete nextCheckedChallenges[activeChallenge];
+
+        return nextCheckedChallenges;
+      });
+
+      return;
+    }
+
     const nextRuntimeCheckResults = { ...runtimeCheckResults };
 
     currentChallenge.tests.forEach((test) => {
@@ -627,108 +722,6 @@ export default function CodeChallengeInterviewPrep() {
     };
 
     setTimeout(readRuntimeResult, 250);
-  };
-
-  const handleEditorKeyDown = (event) => {
-    const pairs = {
-      "(": ")",
-      "{": "}",
-      "[": "]",
-      "<": ">",
-    };
-    const closingKeys = Object.values(pairs);
-
-    if (
-      pairs[event.key] &&
-      !event.ctrlKey &&
-      !event.metaKey &&
-      !event.altKey &&
-      !event.defaultPrevented
-    ) {
-      event.preventDefault();
-
-      const target = event.currentTarget;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      const selectedText = currentCode.slice(start, end);
-      const nextCode =
-        currentCode.slice(0, start) +
-        event.key +
-        selectedText +
-        pairs[event.key] +
-        currentCode.slice(end);
-
-      updateCode(nextCode);
-
-      requestAnimationFrame(() => {
-        target.selectionStart = start + 1;
-        target.selectionEnd = end + 1;
-      });
-
-      return;
-    }
-
-    if (
-      closingKeys.includes(event.key) &&
-      !event.ctrlKey &&
-      !event.metaKey &&
-      !event.altKey &&
-      !event.defaultPrevented
-    ) {
-      const target = event.currentTarget;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-
-      if (start === end && currentCode[start] === event.key) {
-        event.preventDefault();
-
-        requestAnimationFrame(() => {
-          target.selectionStart = start + 1;
-          target.selectionEnd = start + 1;
-        });
-      }
-
-      return;
-    }
-
-    if (event.key !== "Tab" || event.defaultPrevented) {
-      return;
-    }
-
-    event.preventDefault();
-
-    const target = event.currentTarget;
-    const start = target.selectionStart;
-    const end = target.selectionEnd;
-    const indentation = "  ";
-    const nextCode =
-      currentCode.slice(0, start) + indentation + currentCode.slice(end);
-
-    updateCode(nextCode);
-
-    requestAnimationFrame(() => {
-      target.selectionStart = start + indentation.length;
-      target.selectionEnd = start + indentation.length;
-    });
-  };
-
-  const handleEditorDoubleClick = (event) => {
-    const target = event.currentTarget;
-
-    requestAnimationFrame(() => {
-      const selectedText = target.value.slice(
-        target.selectionStart,
-        target.selectionEnd,
-      );
-      const trimmedText = selectedText.replace(/\s+$/, "");
-
-      if (trimmedText.length !== selectedText.length) {
-        target.setSelectionRange(
-          target.selectionStart,
-          target.selectionStart + trimmedText.length,
-        );
-      }
-    });
   };
 
   return (
@@ -788,7 +781,9 @@ export default function CodeChallengeInterviewPrep() {
                 >
                   <div className={styles.challengeGroupHeader}>
                     <button
-                      className={styles.challengeGroupButton}
+                      className={`${styles.challengeGroupButton} ${
+                        isOpen ? styles.openChallengeGroupButton : ""
+                      }`}
                       type="button"
                       aria-expanded={isOpen}
                       aria-controls={panelId}
@@ -798,8 +793,16 @@ export default function CodeChallengeInterviewPrep() {
                         )
                       }
                     >
-                      <span>{group.difficulty}</span>
-                      <span>
+                      <span className={styles.challengeGroupName}>
+                        <span
+                          className={styles.challengeGroupIndicator}
+                          aria-hidden="true"
+                        >
+                          {isOpen ? "-" : "+"}
+                        </span>
+                        <span>{group.difficulty}</span>
+                      </span>
+                      <span className={styles.challengeGroupProgress}>
                         {completedInGroup}/{group.challenges.length} complete
                       </span>
                     </button>
@@ -891,7 +894,7 @@ export default function CodeChallengeInterviewPrep() {
                   key={`${activeChallenge}:${previewRunId}`}
                   title={`${currentChallenge.title} live preview`}
                   className={styles.previewFrame}
-                  sandbox="allow-scripts"
+                  sandbox="allow-scripts allow-forms allow-same-origin"
                   srcDoc={buildCodePreview(currentCode, activeChallenge)}
                 />
               </div>
@@ -1021,20 +1024,28 @@ export default function CodeChallengeInterviewPrep() {
                     preview.css
                   </button>
                 </div>
-                <textarea
+                <CodeMirror
                   className={`${styles.editor} ${
                     isViewingCss ? styles.readOnlyEditor : ""
                   }`}
-                  readOnly={isViewingCss}
-                  spellCheck="false"
+                  basicSetup={{
+                    autocompletion: true,
+                    bracketMatching: true,
+                    closeBrackets: true,
+                    foldGutter: true,
+                    highlightActiveLine: true,
+                    highlightActiveLineGutter: true,
+                    lineNumbers: true,
+                  }}
+                  editable={!isViewingCss}
+                  extensions={editorExtensions}
+                  height="540px"
                   value={editorValue}
-                  onChange={(event) => {
+                  onChange={(value) => {
                     if (!isViewingCss) {
-                      updateCode(event.target.value);
+                      updateCode(value);
                     }
                   }}
-                  onKeyDown={isViewingCss ? undefined : handleEditorKeyDown}
-                  onDoubleClick={handleEditorDoubleClick}
                   aria-label={
                     isViewingCss
                       ? `${currentChallenge.title} preview CSS`
