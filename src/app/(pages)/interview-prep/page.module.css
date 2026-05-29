@@ -691,11 +691,6 @@
   gap: 18px;
 }
 
-.codeWorkspace:has(.consolePanel) {
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
-  align-items: stretch;
-}
-
 .editorColumn p {
   color: #cbd5e1;
   line-height: 1.55;
@@ -866,9 +861,9 @@
 .consolePanel {
   display: grid;
   grid-template-rows: auto 1fr;
-  height: 540px;
+  height: 260px;
   min-height: 0;
-  max-height: 70vh;
+  max-height: 42vh;
   overflow: hidden;
   border: 1px solid rgba(125, 211, 252, 0.32);
   border-radius: 8px;
@@ -1004,10 +999,6 @@
 
 @media (max-width: 1180px) {
   .editorGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .codeWorkspace:has(.consolePanel) {
     grid-template-columns: 1fr;
   }
 

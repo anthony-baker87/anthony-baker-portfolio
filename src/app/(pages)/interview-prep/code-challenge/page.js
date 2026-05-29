@@ -173,7 +173,6 @@ export default function CodeChallengeInterviewPrep() {
   const [showConsole, setShowConsole] = useState(false);
   const [consoleMessages, setConsoleMessages] = useState([]);
   const [formatError, setFormatError] = useState("");
-  const [previewRunId, setPreviewRunId] = useState(0);
   const [activeEditorFile, setActiveEditorFile] = useState(componentEditorFile);
   const [openChallengeDifficulty, setOpenChallengeDifficulty] =
     useState("Easy");
@@ -687,7 +686,6 @@ export default function CodeChallengeInterviewPrep() {
     });
 
     setRuntimeCheckResults(nextRuntimeCheckResults);
-    setPreviewRunId((current) => current + 1);
     setCheckedChallenges((current) => ({
       ...current,
       [activeChallenge]: currentCode,
@@ -891,7 +889,7 @@ export default function CodeChallengeInterviewPrep() {
             <div className={styles.previewColumn}>
               <div className={styles.previewFrameWrap}>
                 <iframe
-                  key={`${activeChallenge}:${previewRunId}`}
+                  key={activeChallenge}
                   title={`${currentChallenge.title} live preview`}
                   className={styles.previewFrame}
                   sandbox="allow-scripts allow-forms allow-same-origin"
@@ -918,7 +916,7 @@ export default function CodeChallengeInterviewPrep() {
                     .filter((test) => isRuntimeCheck(test.check))
                     .map((test) => (
                       <iframe
-                        key={test.check.id}
+                        key={`${activeChallenge}:${test.check.id}:${checkedChallenges[activeChallenge] || ""}`}
                         title={`${test.label} runtime check`}
                         onLoad={(event) =>
                           handleRuntimeCheckFrameLoad(
@@ -1052,45 +1050,45 @@ export default function CodeChallengeInterviewPrep() {
                       : `${currentChallenge.title} code editor`
                   }
                 />
-              </div>
 
-              {showConsole ? (
-                <aside
-                  className={styles.consolePanel}
-                  aria-label="Console output"
-                >
-                  <div className={styles.consoleHeader}>
-                    <strong>Console</strong>
-                    <button
-                      className={styles.consoleClear}
-                      onClick={() => setConsoleMessages([])}
-                      type="button"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <div className={styles.consoleOutput}>
-                    {consoleMessages.length ? (
-                      consoleMessages.map((message) => (
-                        <p
-                          key={message.id}
-                          className={
-                            message.level === "error"
-                              ? styles.consoleError
-                              : styles.consoleLine
-                          }
-                        >
-                          {message.message || "(empty)"}
+                {showConsole ? (
+                  <aside
+                    className={styles.consolePanel}
+                    aria-label="Console output"
+                  >
+                    <div className={styles.consoleHeader}>
+                      <strong>Console</strong>
+                      <button
+                        className={styles.consoleClear}
+                        onClick={() => setConsoleMessages([])}
+                        type="button"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                    <div className={styles.consoleOutput}>
+                      {consoleMessages.length ? (
+                        consoleMessages.map((message) => (
+                          <p
+                            key={message.id}
+                            className={
+                              message.level === "error"
+                                ? styles.consoleError
+                                : styles.consoleLine
+                            }
+                          >
+                            {message.message || "(empty)"}
+                          </p>
+                        ))
+                      ) : (
+                        <p className={styles.consoleMuted}>
+                          No console output yet.
                         </p>
-                      ))
-                    ) : (
-                      <p className={styles.consoleMuted}>
-                        No console output yet.
-                      </p>
-                    )}
-                  </div>
-                </aside>
-              ) : null}
+                      )}
+                    </div>
+                  </aside>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
