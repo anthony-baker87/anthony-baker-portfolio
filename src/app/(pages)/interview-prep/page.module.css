@@ -106,30 +106,6 @@
   font-weight: 800;
 }
 
-.scorePanel {
-  display: grid;
-  gap: 6px;
-  justify-items: center;
-  padding: 22px;
-  border: 1px solid rgba(125, 211, 252, 0.45);
-  border-radius: 8px;
-  background: rgba(8, 47, 73, 0.72);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
-}
-
-.scoreValue {
-  color: #fef3c7;
-  font-size: 2.8rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.scoreLabel {
-  color: #bae6fd;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
 .sectionBlock {
   display: grid;
   gap: 16px;
@@ -734,7 +710,25 @@
   gap: 10px;
 }
 
-.editorActions span {
+.editorProgress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #bae6fd;
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.editorProgress strong {
+  color: #fef3c7;
+  font-size: 1.24rem;
+  line-height: 1;
+}
+
+.editorProgress span {
   color: #bae6fd;
   font-size: 0.92rem;
   font-weight: 800;
@@ -1027,10 +1021,6 @@
 
   .subtitle {
     font-size: 1rem;
-  }
-
-  .scorePanel {
-    justify-self: stretch;
   }
 
   .challengeTabs,

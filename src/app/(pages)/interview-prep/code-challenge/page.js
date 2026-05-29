@@ -737,10 +737,6 @@ export default function CodeChallengeInterviewPrep() {
             watch the preview and checks update in the browser.
           </p>
         </div>
-        <div className={styles.scorePanel} aria-label="Current progress">
-          <span className={styles.scoreValue}>{completion}%</span>
-          <span className={styles.scoreLabel}>Checks passing</span>
-        </div>
       </section>
 
       <section
@@ -989,11 +985,17 @@ export default function CodeChallengeInterviewPrep() {
                       Console
                     </button>
                   </div>
-                  <span>
-                    {hasRunChecks
-                      ? `${passedTests}/${currentChallenge.tests.length} passing`
-                      : "Checks not run yet"}
-                  </span>
+                  <div
+                    className={styles.editorProgress}
+                    aria-label="Current check progress"
+                  >
+                    <strong>{completion}%</strong>
+                    <span>
+                      {hasRunChecks
+                        ? `${passedTests}/${currentChallenge.tests.length} checks passing`
+                        : "Checks not run yet"}
+                    </span>
+                  </div>
                 </div>
                 {formatError ? (
                   <p className={styles.formatError}>{formatError}</p>
