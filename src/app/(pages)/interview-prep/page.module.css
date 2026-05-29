@@ -547,19 +547,15 @@
 
 .challengeTabWrap {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) 76px;
+  grid-template-columns: minmax(0, 1fr) 76px;
   gap: 8px;
   min-width: 0;
   align-items: center;
-  border: 2px solid rgba(2, 6, 23, 0.96);
-  border-radius: 8px;
-  padding: 5px;
-  background: rgba(2, 6, 23, 0.28);
+  padding: 0;
+  background: transparent;
 }
 
 .completedChallengeWrap {
-  border-color: rgba(2, 6, 23, 0.96);
-  background: rgba(6, 78, 59, 0.18);
   color: #ecfdf5;
 }
 
@@ -571,7 +567,7 @@
 }
 
 .challengeStatusCell {
-  place-items: center;
+  display: none;
 }
 
 .challengeResetCell {
@@ -579,7 +575,11 @@
 }
 
 .challengeTab {
+  display: flex;
   position: relative;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 46px;
   padding: 10px 12px;
   text-align: center;
@@ -594,7 +594,7 @@
 }
 
 .challengeTab .completedMark {
-  display: none;
+  flex: 0 0 auto;
 }
 
 .challengeResetButton {
