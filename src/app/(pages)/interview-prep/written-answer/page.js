@@ -5,27 +5,39 @@ import { useMemo, useState } from "react";
 import styles from "../page.module.css";
 import { reactInterviewQuestions } from "@/utils/interviewPrep/reactInterviewQuestions";
 
+const shuffleQuestions = (questions) => {
+  const shuffledQuestions = [...questions];
+
+  for (let index = shuffledQuestions.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledQuestions[index], shuffledQuestions[swapIndex]] = [
+      shuffledQuestions[swapIndex],
+      shuffledQuestions[index],
+    ];
+  }
+
+  return shuffledQuestions;
+};
+
 export default function WrittenAnswerInterviewPrep() {
+  const [questions] = useState(() => shuffleQuestions(reactInterviewQuestions));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [draftAnswers, setDraftAnswers] = useState({});
   const [revealedAnswers, setRevealedAnswers] = useState({});
   const [gradedAnswers, setGradedAnswers] = useState({});
 
-  const currentQuestion = reactInterviewQuestions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex];
   const currentDraft = draftAnswers[currentQuestion.id] || "";
   const isCurrentRevealed = Boolean(revealedAnswers[currentQuestion.id]);
   const currentGrade = gradedAnswers[currentQuestion.id];
-  const isLastQuestion =
-    currentQuestionIndex === reactInterviewQuestions.length - 1;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   const gradedQuestions = Object.keys(gradedAnswers).length;
   const correctAnswers = Object.values(gradedAnswers).filter(Boolean).length;
-  const completion = Math.round(
-    (gradedQuestions / reactInterviewQuestions.length) * 100,
-  );
+  const completion = Math.round((gradedQuestions / questions.length) * 100);
 
   const skillBreakdown = useMemo(() => {
-    const skillStats = reactInterviewQuestions.reduce((stats, question) => {
+    const skillStats = questions.reduce((stats, question) => {
       const current = stats[question.skill] || { correct: 0, answered: 0 };
       const grade = gradedAnswers[question.id];
 
@@ -45,7 +57,7 @@ export default function WrittenAnswerInterviewPrep() {
           ? 0
           : Math.round((stats.correct / stats.answered) * 100),
     }));
-  }, [gradedAnswers]);
+  }, [gradedAnswers, questions]);
 
   const modelAnswer = `${currentQuestion.options[currentQuestion.answer]} ${currentQuestion.explanation}`;
 
@@ -110,13 +122,13 @@ export default function WrittenAnswerInterviewPrep() {
           <div className={styles.sectionHeader}>
             <p id="written-answer-heading">Written Answer Questions</p>
             <span>
-              {correctAnswers}/{reactInterviewQuestions.length} correct
+              {correctAnswers}/{questions.length} correct
             </span>
           </div>
 
           <div className={styles.quizSlider}>
             <div className={styles.progressDots} aria-label="Question progress">
-              {reactInterviewQuestions.map((question, index) => (
+              {questions.map((question, index) => (
                 <button
                   key={question.id}
                   className={`${styles.progressDot} ${
@@ -137,7 +149,7 @@ export default function WrittenAnswerInterviewPrep() {
               <div className={styles.questionMeta}>
                 <span>
                   Question {currentQuestionIndex + 1} of{" "}
-                  {reactInterviewQuestions.length}
+                  {questions.length}
                 </span>
                 <span>{currentQuestion.skill}</span>
               </div>

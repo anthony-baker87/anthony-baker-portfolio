@@ -5,31 +5,43 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "../page.module.css";
 import { reactInterviewQuestions } from "@/utils/interviewPrep/reactInterviewQuestions";
 
-const multipleChoiceStorageKey = "interviewPrepMultipleChoiceAnswers";
+const multipleChoiceStorageKey = "interviewPrepMultipleChoiceAnswers:v2";
+
+const shuffleQuestions = (questions) => {
+  const shuffledQuestions = [...questions];
+
+  for (let index = shuffledQuestions.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledQuestions[index], shuffledQuestions[swapIndex]] = [
+      shuffledQuestions[swapIndex],
+      shuffledQuestions[index],
+    ];
+  }
+
+  return shuffledQuestions;
+};
 
 export default function MultipleChoiceInterviewPrep() {
+  const [questions, setQuestions] = useState(reactInterviewQuestions);
   const [answers, setAnswers] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
 
-  const currentQuestion = reactInterviewQuestions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex];
   const savedAnswer = answers[currentQuestion.id];
   const submitted = savedAnswer !== undefined;
-  const isLastQuestion =
-    currentQuestionIndex === reactInterviewQuestions.length - 1;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
-  const quizScore = reactInterviewQuestions.reduce(
+  const quizScore = questions.reduce(
     (score, question) =>
       answers[question.id] === question.answer ? score + 1 : score,
     0,
   );
   const answeredQuestions = Object.keys(answers).length;
-  const completion = Math.round(
-    (answeredQuestions / reactInterviewQuestions.length) * 100,
-  );
+  const completion = Math.round((answeredQuestions / questions.length) * 100);
 
   const skillBreakdown = useMemo(() => {
-    const skillStats = reactInterviewQuestions.reduce((stats, question) => {
+    const skillStats = questions.reduce((stats, question) => {
       const current = stats[question.skill] || { correct: 0, answered: 0 };
       const selectedAnswer = answers[question.id];
 
@@ -53,7 +65,11 @@ export default function MultipleChoiceInterviewPrep() {
           ? 0
           : Math.round((stats.correct / stats.answered) * 100),
     }));
-  }, [answers]);
+  }, [answers, questions]);
+
+  useEffect(() => {
+    setQuestions(shuffleQuestions(reactInterviewQuestions));
+  }, []);
 
   useEffect(() => {
     try {
@@ -111,6 +127,7 @@ export default function MultipleChoiceInterviewPrep() {
     setAnswers({});
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
+    setQuestions(shuffleQuestions(reactInterviewQuestions));
   };
 
   return (
@@ -139,13 +156,13 @@ export default function MultipleChoiceInterviewPrep() {
           <div className={styles.sectionHeader}>
             <p id="multiple-choice-heading">Multiple Choice Questions</p>
             <span>
-              {quizScore}/{reactInterviewQuestions.length} correct
+              {quizScore}/{questions.length} correct
             </span>
           </div>
 
           <div className={styles.quizSlider}>
             <div className={styles.progressDots} aria-label="Question progress">
-              {reactInterviewQuestions.map((question, index) => {
+              {questions.map((question, index) => {
                 const answer = answers[question.id];
                 const isAnswered = answer !== undefined;
                 const isCorrect = answer === question.answer;
@@ -175,7 +192,7 @@ export default function MultipleChoiceInterviewPrep() {
               <div className={styles.questionMeta}>
                 <span>
                   Question {currentQuestionIndex + 1} of{" "}
-                  {reactInterviewQuestions.length}
+                  {questions.length}
                 </span>
                 <span>{currentQuestion.skill}</span>
               </div>

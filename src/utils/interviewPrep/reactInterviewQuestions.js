@@ -1122,7 +1122,7 @@ export const reactInterviewQuestions = [
     prompt:
       "What does `slice()` do to an array?",
     options: [
-      "Returns a shallow copy without mutating the original",
+      "Returns a shallow copy of a selected range without mutating the original",
       "Deletes matching values from the original",
       "Sorts the original array",
       "Converts the array into a Set",
@@ -1577,7 +1577,7 @@ const laterQuestionRevisions = {
       "It removes matching values from the source array",
       "It sorts the array in place and returns the same reference",
       "It converts the array to a Set before copying",
-      "It returns a shallow copy without mutating the source",
+      "It returns a shallow copy of a selected range without mutating the source",
     ],
     answer: 3,
   },
@@ -1679,4 +1679,68 @@ reactInterviewQuestions.forEach((question) => {
   if (revision) {
     Object.assign(question, revision);
   }
+});
+
+const getQuestionSeed = (questionId) =>
+  [...questionId].reduce((seed, character) => {
+    return (seed * 31 + character.charCodeAt(0)) >>> 0;
+  }, 17);
+
+const getSeededRandom = (seed) => {
+  let currentSeed = seed;
+
+  return () => {
+    currentSeed = (currentSeed * 1664525 + 1013904223) >>> 0;
+    return currentSeed / 2 ** 32;
+  };
+};
+
+const shuffleDeterministically = (items, seed) => {
+  const shuffled = [...items];
+  const random = getSeededRandom(seed);
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [
+      shuffled[swapIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
+};
+
+const answerPositionPatterns = {
+  2: [1, 0],
+  3: [1, 2, 0],
+  4: [2, 0, 3, 1],
+};
+const answerPositionCounts = {};
+
+reactInterviewQuestions.forEach((question) => {
+  const correctOption = question.options[question.answer];
+  const optionCount = question.options.length;
+  const seed = getQuestionSeed(question.id);
+  const positionPattern =
+    answerPositionPatterns[optionCount] ||
+    Array.from({ length: optionCount }, (_, index) => index);
+  const positionCount = answerPositionCounts[optionCount] || 0;
+  const targetAnswerIndex =
+    positionPattern[positionCount % positionPattern.length];
+  const shuffledDistractors = shuffleDeterministically(
+    question.options.filter((_, optionIndex) => optionIndex !== question.answer),
+    seed,
+  );
+  const shuffledOptions = [];
+
+  for (let optionIndex = 0; optionIndex < optionCount; optionIndex += 1) {
+    shuffledOptions[optionIndex] =
+      optionIndex === targetAnswerIndex
+        ? correctOption
+        : shuffledDistractors.shift();
+  }
+
+  question.options = shuffledOptions;
+  question.answer = targetAnswerIndex;
+  answerPositionCounts[optionCount] = positionCount + 1;
 });
