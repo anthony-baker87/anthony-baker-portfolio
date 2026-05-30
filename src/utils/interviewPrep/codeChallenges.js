@@ -14,7 +14,16 @@ const filtersUsersByQuery = (code) =>
 const appendsMessageImmutably = (code) =>
   /setMessages\(\s*\(?\s*(\w+)\s*\)?\s*=>\s*\[\s*\.\.\.\1\s*,/.test(code);
 
-const clearsTextInput = (code) => /setText\(\s*(['"])\1\s*\)/.test(code);
+const controlsChatInput = (code) =>
+  /<input[\s\S]*value=\{\s*text\s*\}[\s\S]*onChange=\{\(?\s*(\w+)\s*\)?\s*=>[\s\S]{0,120}setText\(\s*\1\.target\.value\s*\)/.test(
+    code,
+  ) ||
+  /<input[\s\S]*onChange=\{\(?\s*(\w+)\s*\)?\s*=>[\s\S]{0,120}setText\(\s*\1\.target\.value\s*\)[\s\S]*value=\{\s*text\s*\}/.test(
+    code,
+  );
+
+const clearsTextInput = (code) =>
+  controlsChatInput(code) && /setText\(\s*(['"])\1\s*\)/.test(code);
 
 const updatesCategoryFromInput = (code) =>
   /setCategory\(\s*\w+\.target\.value\s*\)/.test(code);
@@ -43,8 +52,29 @@ const usesFunctionalRowUpdate = (code) =>
 const findsMatchingRowId = (code) =>
   /\.id\s*={2,3}\s*id|id\s*={2,3}\s*\w+\.id/.test(code);
 
-const updatesDynamicFieldImmutably = (code) =>
-  /\{\s*\.\.\.\w+\s*,\s*\[\s*field\s*\]\s*:\s*value\s*\}/.test(code);
+const updatesDynamicFieldImmutably = (code) => {
+  const mapMatch = code.match(/\.map\(\s*\(?\s*(\w+)\s*\)?\s*=>/);
+
+  if (!mapMatch) {
+    return false;
+  }
+
+  const rowName = mapMatch[1];
+  const escapedRowName = rowName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const updatedRow = String.raw`\{\s*\.\.\.${escapedRowName}\s*,\s*\[\s*field\s*\]\s*:\s*value\s*\}`;
+  const rowIdCheck = String.raw`(?:${escapedRowName}\.id\s*={2,3}\s*id|id\s*={2,3}\s*${escapedRowName}\.id)`;
+  const implicitReturn = new RegExp(
+    String.raw`\.map\(\s*\(?\s*${escapedRowName}\s*\)?\s*=>\s*(?!\s*\{)[\s\S]{0,240}(?:${rowIdCheck})[\s\S]{0,180}${updatedRow}[\s\S]{0,120}:\s*${escapedRowName}`,
+  ).test(code);
+  const explicitConditionalReturn = new RegExp(
+    String.raw`\.map\(\s*\(?\s*${escapedRowName}\s*\)?\s*=>\s*\{[\s\S]{0,420}return\s+(?:\(?\s*)?(?:${rowIdCheck})[\s\S]{0,180}${updatedRow}[\s\S]{0,120}:\s*${escapedRowName}`,
+  ).test(code);
+  const explicitIfReturn = new RegExp(
+    String.raw`\.map\(\s*\(?\s*${escapedRowName}\s*\)?\s*=>\s*\{[\s\S]{0,260}if\s*\([\s\S]{0,140}(?:${rowIdCheck})[\s\S]{0,320}return\s+${updatedRow}`,
+  ).test(code);
+
+  return implicitReturn || explicitConditionalReturn || explicitIfReturn;
+};
 
 const updatesDateInputs = (code) =>
   /setStart\(\s*\w+\.target\.value\s*\)/.test(code) &&
@@ -56,11 +86,20 @@ const readsSelectedFile = (code) =>
 const createsPreviewUrl = (code) => /URL\.createObjectURL\(\s*\w+/.test(code);
 
 const updatesDocumentTheme = (code) =>
-  /document\.(body|documentElement)\.(className|classList)/.test(code) &&
-  /theme/.test(code);
+  ((/const\s*\[\s*theme\s*,\s*setTheme\s*\]\s*=\s*useState/.test(code) ||
+    /const\s*\[\s*theme\s*,\s*setTheme\s*\]\s*=\s*React\.useState/.test(
+      code,
+    )) &&
+    (/className=\{\s*["']preview-card\s["']\s*\+\s*theme\s*\}/.test(code) ||
+      /className=\{\s*["']preview-card\s+["']\s*\+\s*theme\s*\}/.test(code) ||
+      /className=\{\s*`preview-card\s+\$\{\s*theme\s*\}`\s*\}/.test(code))) ||
+  (/document\.(body|documentElement)\.(className|classList)/.test(code) &&
+    /theme/.test(code));
 
 const persistsTheme = (code) =>
-  /localStorage\.setItem\(\s*['"]\w*theme\w*['"]\s*,\s*theme\s*\)/i.test(code);
+  /localStorage\.setItem\(\s*(?:['"]\w*theme\w*['"]|\w*theme\w*StorageKey)\s*,\s*theme\s*\)/i.test(
+    code,
+  );
 
 const togglesThemeValue = (code) =>
   /setTheme\(/.test(code) && /light/.test(code) && /dark/.test(code);
@@ -108,13 +147,17 @@ const handlesLoginSubmit = (code) =>
   /<form[\s\S]*onSubmit=\{/.test(code) && /\.preventDefault\(\)/.test(code);
 
 const validatesLoginCredentials = (code) =>
-  /setError\(/.test(code) &&
+  /setErrors?\(/.test(code) &&
   /email/.test(code) &&
   /password/.test(code) &&
-  /@|includes\(|\.trim\(\)|\.length/.test(code);
+  /@|includes\(|\.trim\(\)|\.length|!\s*email|!\s*password/.test(code);
+
+const clearsLoginError = (code) =>
+  /setErrors?\(\s*(['"])\1\s*\)/.test(code) ||
+  /setErrors?\(\s*null\s*\)/.test(code);
 
 const displaysLoginError = (code) =>
-  /error\s*&&[\s\S]*<[^>]+[\s\S]*\{?\s*error\s*\}?/.test(code);
+  /errors?\s*&&[\s\S]*<[^>]+[\s\S]*\{?\s*errors?\s*\}?/.test(code);
 
 const rendersStatusValue = (code) =>
   /\{\s*app(?:\.status|\[['"]status['"]\])\s*\}/.test(code);
@@ -854,6 +897,7 @@ export const codeChallenges = [
         label: "Stores input text in state",
         check: "const [text, setText] = useState",
       },
+      { label: "Controls input value", check: controlsChatInput },
       { label: "Appends message immutably", check: appendsMessageImmutably },
       { label: "Clears input after send", check: clearsTextInput },
     ],
@@ -862,22 +906,24 @@ export const codeChallenges = [
     id: "theme-toggle",
     title: "Theme Toggle",
     skill: "DOM State + Persistence",
-    difficulty: "Hard",
+    difficulty: "Medium",
     componentName: "ThemeToggle",
     instructions:
-      "Build a React theme toggle that stores theme state and persists it to localStorage.",
+      "Build a React theme toggle that applies the theme to the preview card and persists it to localStorage under the visible themeStorageKey.",
     starter: `function ThemeToggle() {
   // TODO: track theme in state and persist changes.
+  const themeStorageKey = "theme";
   const theme = "light";
 
   useEffect(() => {
-    // TODO: update document class and localStorage.
+    // TODO: persist theme changes to localStorage.
   }, [theme]);
 
   return (
-    <section className={"preview-card " + theme}>
+    <section className="preview-card">
       <h2>Theme Toggle</h2>
       <p>Current theme: {theme}</p>
+      <p>Storage key: {themeStorageKey}</p>
       <button>
         Toggle theme
       </button>
@@ -889,7 +935,7 @@ export const codeChallenges = [
         label: "Stores theme in state",
         check: "const [theme, setTheme] = useState",
       },
-      { label: "Updates document class", check: updatesDocumentTheme },
+      { label: "Applies theme class", check: updatesDocumentTheme },
       { label: "Persists to localStorage", check: persistsTheme },
       { label: "Toggles theme value", check: togglesThemeValue },
     ],
@@ -1085,6 +1131,7 @@ export const codeChallenges = [
       { label: "Updates both fields", check: updatesLoginFields },
       { label: "Handles form submit", check: handlesLoginSubmit },
       { label: "Validates credentials", check: validatesLoginCredentials },
+      { label: "Clears validation error", check: clearsLoginError },
       { label: "Displays validation error", check: displaysLoginError },
     ],
   },
@@ -1586,7 +1633,23 @@ export const codeChallenges = [
     starter: `function MemoizeDemo() {
   // TODO: implement memoizeTimesTwo with a closure cache.
   const memoizeTimesTwo = () => {
-    return (num) => num * 2;
+    const cache = {};
+    const history = [];
+
+    const timesTwo = (num) => {
+      if (num in cache) {
+        history.push(num + ": cache hit");
+        return cache[num];
+      }
+
+      const result = num * 2;
+      cache[num] = result;
+      history.push(num + ": calculated");
+      return result;
+    };
+
+    timesTwo.history = history;
+    return timesTwo;
   };
 
   const timesTwo = memoizeTimesTwo();
@@ -1597,6 +1660,11 @@ export const codeChallenges = [
     <section className="preview-card">
       <h2>Memoize</h2>
       <p>{first} / {second}</p>
+      <ul>
+        {timesTwo.history.map((entry, index) => (
+          <li key={index}>{entry}</li>
+        ))}
+      </ul>
     </section>
   );
 }`,

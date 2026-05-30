@@ -3,16 +3,16 @@ export const reactInterviewQuestions = [
     id: "rendering",
     skill: "React Fundamentals",
     prompt:
-      "A memoized product card receives a new `price` prop. You confirmed with a console log that the parent passes the new value, but the card still shows the old price. What should you inspect next?",
+      "A product card is wrapped in `React.memo` with a custom comparison function. The parent logs a new `price` value, but the card still shows the old price. What should you inspect next?",
     options: [
       "Whether the parent route file has a matching name",
       "Whether the CSS class is hiding the updated text node",
-      "Whether `memo` is skipping the prop update",
+      "Whether the custom comparison ignores `price`",
       "Whether a cached route is showing older markup",
     ],
     answer: 2,
     explanation:
-      "A stale custom comparison in `memo` can prevent re-rendering even when a meaningful prop changed.",
+      "`React.memo` re-renders when props change unless a custom comparison incorrectly returns `true`. Make sure the comparison checks meaningful props like `price`.",
   },
   {
     id: "state-updates",

@@ -173,6 +173,7 @@ export default function CodeChallengeInterviewPrep() {
   const [showConsole, setShowConsole] = useState(false);
   const [consoleMessages, setConsoleMessages] = useState([]);
   const [formatError, setFormatError] = useState("");
+  const [previewRunId, setPreviewRunId] = useState(0);
   const [activeEditorFile, setActiveEditorFile] = useState(componentEditorFile);
   const [openChallengeDifficulty, setOpenChallengeDifficulty] =
     useState("Easy");
@@ -655,6 +656,12 @@ export default function CodeChallengeInterviewPrep() {
     });
   };
 
+  const rerunPreview = () => {
+    setConsoleMessages([]);
+    setShowConsole(true);
+    setPreviewRunId((current) => current + 1);
+  };
+
   const runChecks = async () => {
     try {
       await validateCurrentCodeSyntax();
@@ -885,7 +892,7 @@ export default function CodeChallengeInterviewPrep() {
             <div className={styles.previewColumn}>
               <div className={styles.previewFrameWrap}>
                 <iframe
-                  key={activeChallenge}
+                  key={`${activeChallenge}:${previewRunId}`}
                   title={`${currentChallenge.title} live preview`}
                   className={styles.previewFrame}
                   sandbox="allow-scripts allow-forms allow-same-origin"
@@ -973,6 +980,13 @@ export default function CodeChallengeInterviewPrep() {
                       type="button"
                     >
                       Format
+                    </button>
+                    <button
+                      className={styles.secondaryAction}
+                      onClick={rerunPreview}
+                      type="button"
+                    >
+                      Rerun preview
                     </button>
                     <button
                       className={`${styles.secondaryAction} ${
