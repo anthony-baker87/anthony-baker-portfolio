@@ -304,7 +304,8 @@ const keepsNumsAsSourceArray = (code) =>
   /const\s+nums\s*=\s*\[[\s\S]*\]/.test(code) && createsUniqueNumsFromSet(code);
 
 const rendersUniqueNums = (code) =>
-  createsUniqueNumsFromSet(code) && /uniqueNums\.join/.test(code);
+  createsUniqueNumsFromSet(code) &&
+  (/uniqueNums\.join/.test(code) || /uniqueNums\.map\(/.test(code));
 
 const sortsUsersByName = (code) =>
   /\.sort\(/.test(code) &&
