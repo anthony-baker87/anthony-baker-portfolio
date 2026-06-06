@@ -412,6 +412,18 @@ const usesReusableButton = (code) => {
   return buttonsWithHandlers.length >= 2;
 };
 
+const returnsReusableButtonElement = (code) =>
+  /function\s+\w*Button\s*\([^)]*\)\s*\{[\s\S]{0,500}\breturn\s*\(?\s*<button\b/.test(
+    code,
+  ) ||
+  /const\s+\w*Button\s*=\s*\([^)]*\)\s*=>\s*(?:\(\s*)?<button\b/.test(code) ||
+  /const\s+\w*Button\s*=\s*\([^)]*\)\s*=>\s*\{[\s\S]{0,500}\breturn\s*\(?\s*<button\b/.test(
+    code,
+  );
+
+const rendersReusableButtons = (code) =>
+  usesReusableButton(code) && returnsReusableButtonElement(code);
+
 const focusesInputRef = (code) => /\.current\.focus\(\)/.test(code);
 
 const createsInputRef = (code) =>
@@ -447,8 +459,8 @@ const rendersChildWithProps = (code) =>
   /<\w+[\s\S]*(name|age|title|label)=/.test(code);
 
 const destructuresProps = (code) =>
-  /\(\s*\{[^}]+(?:name|age|title|label)[^}]*\}\s*\)/.test(code) ||
-  /const\s*\{[^}]+(?:name|age|role|title|label)[^}]*\}\s*=\s*props/.test(code);
+  /\(\s*\{[^}]*(?:name|age|role|title|label)[^}]*\}\s*\)/.test(code) ||
+  /const\s*\{[^}]*(?:name|age|role|title|label)[^}]*\}\s*=\s*props/.test(code);
 
 const returnsReactFragment = (code) =>
   /<>\s*[\s\S]*<\/>|<React\.Fragment[\s\S]*<\/React\.Fragment>/.test(code);
@@ -630,7 +642,10 @@ export const codeChallenges = [
       },
       { label: "Declares a reusable Button", check: declaresReusableButton },
       { label: "Accepts button props", check: passesButtonProps },
-      { label: "Uses reusable buttons", check: usesReusableButton },
+      {
+        label: "Returns and uses reusable buttons",
+        check: rendersReusableButtons,
+      },
     ],
   },
   {
@@ -1206,11 +1221,10 @@ export const codeChallenges = [
     instructions:
       "Build a component that replaces the preview-card section with a React Fragment, returning the heading and paragraph as sibling elements without adding an extra DOM node.",
     starter: `function FragmentDemo() {
-  // TODO: replace the section wrapper with a Fragment.
+  // TODO: replace the section with a Fragment containing a heading and paragraph.
   return (
     <section className="preview-card">
-      <h2>Fragment</h2>
-      <p>Description</p>
+      <span>TODO: render the Fragment content here.</span>
     </section>
   );
 }`,
