@@ -24,7 +24,12 @@
 
 .title {
   margin-bottom: 12px;
+  background: none !important;
+  color: #f8fafc !important;
+  font-size: clamp(2.1rem, 4vw, 2.8rem) !important;
+  line-height: 1.08;
   text-align: left;
+  -webkit-text-fill-color: #f8fafc !important;
 }
 
 .subtitle {
@@ -438,7 +443,7 @@
 
 .challengeGroupHeader {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 148px;
   gap: 8px;
   min-width: 0;
 }
@@ -515,7 +520,7 @@
 }
 
 .challengeGroupResetButton {
-  width: 132px;
+  width: 100%;
   min-height: 44px;
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 8px;
@@ -541,13 +546,13 @@
 
 .challengeGroupGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 
 .challengeTabWrap {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 76px;
+  grid-template-columns: minmax(0, 1fr) 148px;
   gap: 8px;
   min-width: 0;
   align-items: center;
@@ -598,6 +603,7 @@
 }
 
 .challengeResetButton {
+  width: 100%;
   min-height: 46px;
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 8px;

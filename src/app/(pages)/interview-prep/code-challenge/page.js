@@ -5,7 +5,8 @@ import { javascript } from "@codemirror/lang-javascript";
 import { linter } from "@codemirror/lint";
 import { oneDark } from "@codemirror/theme-one-dark";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { format } from "prettier/standalone";
 import * as babelPlugin from "prettier/plugins/babel";
 import * as estreePlugin from "prettier/plugins/estree";
@@ -16,9 +17,15 @@ import {
   codeChallengePreviewCss,
   codeChallenges,
 } from "@/utils/interviewPrep/codeChallenges";
+import { graphQLCodeChallenges } from "@/utils/interviewPrep/graphqlCodeChallenges";
+import { restApiCodeChallenges } from "@/utils/interviewPrep/restApiCodeChallenges";
 
-const completedStorageKey = "interviewPrepCompletedChallenges";
-const solutionsStorageKey = "interviewPrepChallengeSolutions";
+const reactCompletedStorageKey = "interviewPrepCompletedChallenges";
+const reactSolutionsStorageKey = "interviewPrepChallengeSolutions";
+const graphQLCompletedStorageKey = "interviewPrepGraphQLCompletedChallenges";
+const graphQLSolutionsStorageKey = "interviewPrepGraphQLChallengeSolutions";
+const restCompletedStorageKey = "interviewPrepRestCompletedChallenges";
+const restSolutionsStorageKey = "interviewPrepRestChallengeSolutions";
 const runtimeCheckMessageSource = "code-challenge-runtime-check";
 const consoleMessageSource = "code-challenge-console";
 const reactHookNames = [
@@ -125,14 +132,14 @@ const normalizeStoredChallengeCode = (code, challengeId) =>
   normalizeOldNoopStarterHandlers(
     normalizeOldStarterImports(code, challengeId),
   );
-const getStarterCode = (challengeId) => {
-  const challenge = codeChallenges.find((item) => item.id === challengeId);
+const getStarterCode = (challengeId, challenges = codeChallenges) => {
+  const challenge = challenges.find((item) => item.id === challengeId);
 
   return challenge ? withStarterImports(challenge.starter) : "";
 };
-const getStarterCodeByChallenge = () =>
+const getStarterCodeByChallenge = (challenges = codeChallenges) =>
   Object.fromEntries(
-    codeChallenges.map((challenge) => [
+    challenges.map((challenge) => [
       challenge.id,
       withStarterImports(challenge.starter),
     ]),
@@ -162,10 +169,47 @@ const moveImportsToTop = (code) => {
   ].join("\n");
 };
 
-export default function CodeChallengeInterviewPrep() {
-  const [activeChallenge, setActiveChallenge] = useState(codeChallenges[0].id);
+function CodeChallengeInterviewPrepContent() {
+  const searchParams = useSearchParams();
+  const track = searchParams.get("track");
+  const trackConfig =
+    {
+      graphql: {
+        challenges: graphQLCodeChallenges,
+        completedStorageKey: graphQLCompletedStorageKey,
+        solutionsStorageKey: graphQLSolutionsStorageKey,
+        pageTitle: "GraphQL Code Challenge",
+        pageSubtitle:
+          "Practice GraphQL queries, variables, mutations, pagination, and error handling in the editor.",
+        sectionTitle: "GraphQL Challenge",
+      },
+      rest: {
+        challenges: restApiCodeChallenges,
+        completedStorageKey: restCompletedStorageKey,
+        solutionsStorageKey: restSolutionsStorageKey,
+        pageTitle: "REST API Code Challenge",
+        pageSubtitle:
+          "Practice REST endpoints, fetch options, query params, error handling, and request cleanup in the editor.",
+        sectionTitle: "REST API Challenge",
+      },
+    }[track] || {
+      challenges: codeChallenges,
+      completedStorageKey: reactCompletedStorageKey,
+      solutionsStorageKey: reactSolutionsStorageKey,
+      pageTitle: "Frontend Code Challenge",
+      pageSubtitle:
+        "Solve practical JavaScript and component prompts in the editor, then watch the preview and checks update in the browser.",
+      sectionTitle: "Code Challenge",
+    };
+  const activeChallenges = trackConfig.challenges;
+  const completedStorageKey = trackConfig.completedStorageKey;
+  const solutionsStorageKey = trackConfig.solutionsStorageKey;
+  const pageTitle = trackConfig.pageTitle;
+  const pageSubtitle = trackConfig.pageSubtitle;
+  const sectionTitle = trackConfig.sectionTitle;
+  const [activeChallenge, setActiveChallenge] = useState(activeChallenges[0].id);
   const [codeByChallenge, setCodeByChallenge] = useState(
-    getStarterCodeByChallenge,
+    () => getStarterCodeByChallenge(activeChallenges),
   );
   const [checkedChallenges, setCheckedChallenges] = useState({});
   const [completedChallenges, setCompletedChallenges] = useState([]);
@@ -179,7 +223,7 @@ export default function CodeChallengeInterviewPrep() {
     useState("Easy");
   const compilerRef = useRef(null);
 
-  const currentChallenge = codeChallenges.find(
+  const currentChallenge = activeChallenges.find(
     (challenge) => challenge.id === activeChallenge,
   );
   const currentCode = codeByChallenge[activeChallenge];
@@ -227,7 +271,7 @@ export default function CodeChallengeInterviewPrep() {
   const challengesByDifficulty = challengeDifficultyOrder
     .map((difficulty) => ({
       difficulty,
-      challenges: codeChallenges.filter(
+      challenges: activeChallenges.filter(
         (challenge) => challenge.difficulty === difficulty,
       ),
     }))
@@ -265,6 +309,13 @@ export default function CodeChallengeInterviewPrep() {
   );
 
   useEffect(() => {
+    setActiveChallenge(activeChallenges[0].id);
+    setCodeByChallenge(getStarterCodeByChallenge(activeChallenges));
+    setCheckedChallenges({});
+    setCompletedChallenges([]);
+    setRuntimeCheckResults({});
+    setConsoleMessages([]);
+
     try {
       const storedChallenges = JSON.parse(
         localStorage.getItem(completedStorageKey) || "[]",
@@ -312,7 +363,7 @@ export default function CodeChallengeInterviewPrep() {
     } catch {
       setCompletedChallenges([]);
     }
-  }, []);
+  }, [activeChallenges, completedStorageKey, solutionsStorageKey]);
 
   useEffect(() => {
     const appendConsoleMessage = (data) => {
@@ -395,7 +446,7 @@ export default function CodeChallengeInterviewPrep() {
       );
       return nextCompletedChallenges;
     });
-  }, [activeChallenge, isCurrentChallengeComplete]);
+  }, [activeChallenge, completedStorageKey, isCurrentChallengeComplete]);
 
   useEffect(() => {
     if (!hasRunChecks) {
@@ -470,7 +521,7 @@ export default function CodeChallengeInterviewPrep() {
       };
       const savedSolutions = Object.fromEntries(
         Object.entries(nextCodeByChallenge).filter(([challengeId, code]) => {
-          const challenge = codeChallenges.find(
+          const challenge = activeChallenges.find(
             (item) => item.id === challengeId,
           );
           return challenge && code !== withStarterImports(challenge.starter);
@@ -484,7 +535,7 @@ export default function CodeChallengeInterviewPrep() {
   };
 
   const resetChallenge = (challengeId) => {
-    const starterCode = getStarterCode(challengeId);
+    const starterCode = getStarterCode(challengeId, activeChallenges);
 
     setCodeByChallenge((current) => {
       const nextCodeByChallenge = {
@@ -494,7 +545,10 @@ export default function CodeChallengeInterviewPrep() {
       const savedSolutions = Object.fromEntries(
         Object.entries(nextCodeByChallenge).filter(
           ([currentChallengeId, code]) => {
-            const starter = getStarterCode(currentChallengeId);
+            const starter = getStarterCode(
+              currentChallengeId,
+              activeChallenges,
+            );
 
             return starter && code !== starter;
           },
@@ -536,7 +590,7 @@ export default function CodeChallengeInterviewPrep() {
   };
 
   const resetAllChallenges = () => {
-    setCodeByChallenge(getStarterCodeByChallenge());
+    setCodeByChallenge(getStarterCodeByChallenge(activeChallenges));
     setCheckedChallenges({});
     setCompletedChallenges([]);
     setRuntimeCheckResults({});
@@ -553,12 +607,15 @@ export default function CodeChallengeInterviewPrep() {
       const nextCodeByChallenge = { ...current };
 
       challengeIds.forEach((challengeId) => {
-        nextCodeByChallenge[challengeId] = getStarterCode(challengeId);
+        nextCodeByChallenge[challengeId] = getStarterCode(
+          challengeId,
+          activeChallenges,
+        );
       });
 
       const savedSolutions = Object.fromEntries(
         Object.entries(nextCodeByChallenge).filter(([challengeId, code]) => {
-          const starter = getStarterCode(challengeId);
+          const starter = getStarterCode(challengeId, activeChallenges);
 
           return starter && code !== starter;
         }),
@@ -604,7 +661,7 @@ export default function CodeChallengeInterviewPrep() {
   };
 
   const selectChallenge = (challengeId) => {
-    const nextChallenge = codeChallenges.find(
+    const nextChallenge = activeChallenges.find(
       (challenge) => challenge.id === challengeId,
     );
 
@@ -738,11 +795,8 @@ export default function CodeChallengeInterviewPrep() {
       <section className={styles.hero}>
         <div>
           <p className={styles.kicker}>Coding quiz</p>
-          <h1 className={styles.title}>Frontend Code Challenge</h1>
-          <p className={styles.subtitle}>
-            Solve practical JavaScript and component prompts in the editor, then
-            watch the preview and checks update in the browser.
-          </p>
+          <h1 className={styles.title}>{pageTitle}</h1>
+          <p className={styles.subtitle}>{pageSubtitle}</p>
         </div>
       </section>
 
@@ -753,7 +807,7 @@ export default function CodeChallengeInterviewPrep() {
         <div className={styles.codePanel}>
           <div className={styles.sectionHeader}>
             <div className={styles.sectionHeaderTitle}>
-              <p id="coding-quiz-heading">Code Challenge</p>
+              <p id="coding-quiz-heading">{sectionTitle}</p>
               <button
                 className={styles.compactAction}
                 onClick={resetAllChallenges}
@@ -896,7 +950,11 @@ export default function CodeChallengeInterviewPrep() {
                   title={`${currentChallenge.title} live preview`}
                   className={styles.previewFrame}
                   sandbox="allow-scripts allow-forms allow-same-origin"
-                  srcDoc={buildCodePreview(currentCode, activeChallenge)}
+                  srcDoc={buildCodePreview(
+                    currentCode,
+                    activeChallenge,
+                    activeChallenges,
+                  )}
                 />
               </div>
 
@@ -931,6 +989,7 @@ export default function CodeChallengeInterviewPrep() {
                           currentCode,
                           activeChallenge,
                           test.check.id,
+                          activeChallenges,
                         )}
                         style={{
                           border: 0,
@@ -1110,5 +1169,13 @@ export default function CodeChallengeInterviewPrep() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function CodeChallengeInterviewPrep() {
+  return (
+    <Suspense fallback={null}>
+      <CodeChallengeInterviewPrepContent />
+    </Suspense>
   );
 }

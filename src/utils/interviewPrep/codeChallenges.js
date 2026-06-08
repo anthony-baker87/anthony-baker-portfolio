@@ -2187,8 +2187,8 @@ function getPreparedPreviewCode(code) {
   };
 }
 
-export function buildCodePreview(code, challengeId) {
-  const challenge = codeChallenges.find((item) => item.id === challengeId);
+export function buildCodePreview(code, challengeId, challenges = codeChallenges) {
+  const challenge = challenges.find((item) => item.id === challengeId);
   const componentName = challenge?.componentName || "StatusCard";
   const preparedCode = getPreparedPreviewCode(code);
 
@@ -2267,8 +2267,13 @@ export function buildCodePreview(code, challengeId) {
     </html>`;
 }
 
-export function buildRuntimeCheckPreview(code, challengeId, testId) {
-  const challenge = codeChallenges.find((item) => item.id === challengeId);
+export function buildRuntimeCheckPreview(
+  code,
+  challengeId,
+  testId,
+  challenges = codeChallenges,
+) {
+  const challenge = challenges.find((item) => item.id === challengeId);
   const componentName = challenge?.componentName || "StatusCard";
   const preparedCode = getPreparedPreviewCode(code);
 

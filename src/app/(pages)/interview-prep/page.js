@@ -6,50 +6,50 @@ export default function InterviewPrep() {
     <div className={styles.page}>
       <section className={styles.hero}>
         <div>
-          <p className={styles.kicker}>Interactive frontend practice</p>
+          <p className={styles.kicker}>Interactive interview practice</p>
           <h1 className={styles.title}>Interview Prep Lab</h1>
           <p className={styles.subtitle}>
-            Choose a focused practice mode for React interview questions or
-            browser-based coding challenges.
+            Pick a topic track, then work through quizzes or coding challenges
+            with immediate feedback.
           </p>
         </div>
       </section>
 
-      <section className={styles.choiceGrid} aria-label="Interview prep modes">
-        <Link
-          href="/interview-prep/multiple-choice"
-          className={styles.choiceCard}
-        >
-          <span className={styles.choiceEyebrow}>Section 1</span>
-          <h2>Multiple Choice Quiz</h2>
+      <section className={styles.choiceGrid} aria-label="Interview prep tracks">
+        <Link href="/interview-prep/react" className={styles.choiceCard}>
+          <span className={styles.choiceEyebrow}>Track 1</span>
+          <h2>React</h2>
           <p>
-            Answer React, hooks, state, accessibility, and performance questions
-            with instant feedback.
+            Practice React multiple choice, written recall, and frontend code
+            challenges.
           </p>
-          <span className={styles.choiceAction}>Start quiz</span>
+          <span className={styles.choiceAction}>Open React prep</span>
         </Link>
 
         <Link
-          href="/interview-prep/written-answer"
+          href="/interview-prep/code-challenge?track=graphql"
           className={styles.choiceCard}
         >
-          <span className={styles.choiceEyebrow}>Section 2</span>
-          <h2>Written Answer Quiz</h2>
+          <span className={styles.choiceEyebrow}>Track 2</span>
+          <h2>GraphQL</h2>
           <p>
-            Type answers in your own words, reveal a reference answer, then
-            grade yourself right or wrong.
+            Solve hands-on query, variable, mutation, pagination, and error
+            handling coding challenges.
           </p>
-          <span className={styles.choiceAction}>Practice recall</span>
+          <span className={styles.choiceAction}>Open GraphQL prep</span>
         </Link>
 
-        <Link href="/interview-prep/code-challenge" className={styles.choiceCard}>
-          <span className={styles.choiceEyebrow}>Section 3</span>
-          <h2>Code Challenge</h2>
+        <Link
+          href="/interview-prep/code-challenge?track=rest"
+          className={styles.choiceCard}
+        >
+          <span className={styles.choiceEyebrow}>Track 3</span>
+          <h2>REST API</h2>
           <p>
-            Work through JavaScript and component prompts with an in-browser
-            editor, live preview, and checks.
+            Practice endpoints, fetch requests, query params, JSON bodies,
+            errors, and cleanup patterns.
           </p>
-          <span className={styles.choiceAction}>Open editor</span>
+          <span className={styles.choiceAction}>Open REST prep</span>
         </Link>
       </section>
     </div>
